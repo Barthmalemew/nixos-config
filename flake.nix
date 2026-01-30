@@ -20,7 +20,7 @@
     nixosConfigurations.ladmin = nixpkgs.lib.nixosSystem {
 	modules = [ 
     { nixpkgs.hostPlatform = "x86_64-linux"; }
-	./configuration.nix 
+	./hosts/ladmin-laptop/default.nix 
 	home-manager.nixosModules.home-manager
 	{
 		home-manager.useGlobalPkgs = true;
