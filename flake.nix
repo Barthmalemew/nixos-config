@@ -30,5 +30,18 @@
 	}
       ];
     };
+    nixosConfigurations.ladmin = nixpkgs.lib.nixosSystem {
+	modules = [ 
+    { nixpkgs.hostPlatform = "x86_64-linux"; }
+	./hosts/ladmin/default.nix 
+	home-manager.nixosModules.home-manager
+	{
+		home-manager.useGlobalPkgs = true;
+		home-manager.useUserPackages = true;
+		home-manager.extraSpecialArgs = { inherit nvf mandrid; };
+		home-manager.users.barthmalemew = import ./home.nix;
+	}
+      ];
+    };
   };
 }

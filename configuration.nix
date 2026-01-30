@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Imports are now handled in hosts/ladmin-laptop/default.nix
+  # Imports are now handled in the host-specific default.nix
   imports = [ ];
 
   # Bootloader
@@ -14,7 +14,7 @@
   boot.kernelPackages = pkgs.linuxPackages_zen;
 
   # Networking
-  # networking.hostName is defined in hosts/ladmin-laptop/default.nix
+  # networking.hostName is defined in the host-specific default.nix
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/New_York";
