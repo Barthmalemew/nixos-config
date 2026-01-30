@@ -7,4 +7,6 @@
   ];
 
   networking.hostName = "ladmin-laptop";
+
+  services.thermald.enable = true;
 }
