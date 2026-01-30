@@ -1,0 +1,54 @@
+{
+  "files": {
+    "/home/barthmalemew/nixos-config/.aider.chat.history.md": {
+      "mtime_secs": 1769599249,
+      "size_bytes": 552,
+      "indexed_at": 1769660126
+    },
+    "/home/barthmalemew/nixos-config/config/opencode.nix": {
+      "mtime_secs": 1769602709,
+      "size_bytes": 449,
+      "indexed_at": 1769660127
+    },
+    "/home/barthmalemew/nixos-config/flake.nix": {
+      "mtime_secs": 1769657011,
+      "size_bytes": 858,
+      "indexed_at": 1769660127
+    },
+    "/home/barthmalemew/nixos-config/hardware-configuration.nix": {
+      "mtime_secs": 1769121755,
+      "size_bytes": 962,
+      "indexed_at": 1769660127
+    },
+    "/home/barthmalemew/nixos-config/configuration.nix": {
+      "mtime_secs": 1769649503,
+      "size_bytes": 2396,
+      "indexed_at": 1769660127
+    },
+    "/home/barthmalemew/nixos-config/nvf/nvf-configuration.nix": {
+      "mtime_secs": 1769638517,
+      "size_bytes": 2067,
+      "indexed_at": 1769660126
+    },
+    "/home/barthmalemew/nixos-config/AGENTS.md": {
+      "mtime_secs": 1769659963,
+      "size_bytes": 646,
+      "indexed_at": 1769660127
+    },
+    "/home/barthmalemew/nixos-config/home.nix": {
+      "mtime_secs": 1769655986,
+      "size_bytes": 2412,
+      "indexed_at": 1769660126
+    },
+    "/home/barthmalemew/nixos-config/config/foot.nix": {
+      "mtime_secs": 1769604363,
+      "size_bytes": 1443,
+      "indexed_at": 1769660127
+    },
+    "/home/barthmalemew/nixos-config/nvf/flake.nix": {
+      "mtime_secs": 1769118034,
+      "size_bytes": 322,
+      "indexed_at": 1769660126
+    }
+  }
+}

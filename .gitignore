@@ -1,1 +1,2 @@
-.mem_db/
+hardware-configuration.nix
+# .mem_db/ (Tracking Mandrid memories)

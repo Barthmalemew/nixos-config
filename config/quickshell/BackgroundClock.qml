@@ -46,7 +46,8 @@ PanelWindow {
 		width: 80 * win.scale
 		height: 80 * win.scale
 		fillMode: Image.PreserveAspectFit
-		x: win.width * 0.72
+		anchors.right: parent.right
+		anchors.rightMargin: win.width * 0.28 // Maintains 72% position but anchored right
 		y: 80 * win.scale
 		z: 5
 		smooth: true
