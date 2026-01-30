@@ -6,5 +6,5 @@
     ../../configuration.nix
   ];
 
-  networking.hostName = "ladmin";
+  networking.hostName = "ladmin-laptop";
 }

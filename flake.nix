@@ -17,7 +17,7 @@
   };
 
   outputs = { nixpkgs, home-manager, nvf, mandrid, ... }: {
-    nixosConfigurations.ladmin = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.ladmin-laptop = nixpkgs.lib.nixosSystem {
 	modules = [ 
     { nixpkgs.hostPlatform = "x86_64-linux"; }
 	./hosts/ladmin-laptop/default.nix 
