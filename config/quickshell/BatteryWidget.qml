@@ -11,7 +11,7 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	visible: battery.present
+	visible: true
 
 	// Resilient Scale Calculation (Supports v0.1.0 and v0.2.1)
 	readonly property real scale: (win.screen ? (win.screen.geometry ? win.screen.geometry.height : win.screen.height) : 1080) / 1080
@@ -43,18 +43,18 @@ PanelWindow {
 	
 	readonly property var dev: UPower.displayDevice
 
-	readonly property int pct: battery.capacity
+	readonly property int pct: battery.present ? battery.capacity : 100
 	readonly property string statusLower: (battery.status || "").toLowerCase()
-	readonly property bool isDischarging: statusLower.indexOf("discharging") === 0
-	readonly property bool isChargingState: statusLower.indexOf("charging") === 0
-	readonly property bool isNotCharging: statusLower.indexOf("not charging") === 0
-	readonly property bool isFull: statusLower.indexOf("full") === 0
+	readonly property bool isDischarging: battery.present && statusLower.indexOf("discharging") === 0
+	readonly property bool isChargingState: battery.present && statusLower.indexOf("charging") === 0
+	readonly property bool isNotCharging: battery.present && statusLower.indexOf("not charging") === 0
+	readonly property bool isFull: battery.present ? statusLower.indexOf("full") === 0 : true
 	readonly property bool hasAcState: battery.acOnline === 0 || battery.acOnline === 1
-	readonly property bool isPlugged: hasAcState
+	readonly property bool isPlugged: !battery.present || (hasAcState
 		? battery.acOnline === 1
-		: isChargingState || isFull || isNotCharging
-	readonly property bool isCharging: isChargingState
-	readonly property bool isLow: !isPlugged && pct < 20
+		: isChargingState || isFull || isNotCharging)
+	readonly property bool isCharging: battery.present && isChargingState
+	readonly property bool isLow: battery.present && !isPlugged && pct < 20
 	readonly property int fallbackEmptySeconds: (battery.energyNow > 0 && battery.powerNow > 0)
 		? Math.round((battery.energyNow / Math.abs(battery.powerNow)) * 3600)
 		: 0
@@ -162,7 +162,7 @@ PanelWindow {
 					font.family: "JetBrainsMono Nerd Font"
 				}
 				Text {
-					text: "RESERVE"
+					text: battery.present ? "RESERVE" : "STATIONARY"
 					color: win.accentColor
 					font.pixelSize: 10 * win.scale
 					font.weight: 900

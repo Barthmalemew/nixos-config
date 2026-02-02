@@ -43,6 +43,7 @@
 
 	programs.ssh = {
 		enable = true;
+		enableDefaultConfig = false;
 		matchBlocks = {
 			"*" = {
 				addKeysToAgent = "yes";
@@ -85,14 +86,17 @@
 	};
 
 	# Config Links
-	home.file.".config/niri/config.kdl".text = 
-        let 
-            baseConfig = builtins.readFile ./config/niri/config.kdl;
-        in
-        builtins.replaceStrings [ "\"#c24f4f\"" ] [ "\"${theme.colors.red}\"" ] baseConfig;
+	xdg.configFile."niri/config.kdl" = {
+        text = 
+            let 
+                baseConfig = builtins.readFile ./config/niri/config.kdl;
+            in
+            builtins.replaceStrings [ "\"#c24f4f\"" ] [ "\"${theme.colors.red}\"" ] baseConfig;
+        force = true;
+    };
 
-    home.file.".config/quickshell".source = ./config/quickshell;
-	home.file.".config/quickshell/theme/Colors.qml".text = ''
+    xdg.configFile."quickshell".source = ./config/quickshell;
+	xdg.configFile."quickshell/theme/Colors.qml".text = ''
 		import QtQuick
 
 		QtObject {
@@ -159,6 +163,39 @@
 		Service = {
 			ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
 			Restart = "on-failure";
+		};
+		Install = {
+			WantedBy = [ "graphical-session.target" ];
+		};
+	};
+
+	systemd.user.services.quickshell = {
+		Unit = {
+			Description = "QuickShell Desktop Shell";
+			After = [ "graphical-session.target" ];
+			PartOf = [ "graphical-session.target" ];
+		};
+		Service = {
+			ExecStart = "${pkgs.quickshell}/bin/qs";
+			Restart = "always";
+			RestartSec = 2;
+		};
+		Install = {
+			WantedBy = [ "graphical-session.target" ];
+		};
+	};
+
+	systemd.user.services.swaybg = {
+		Unit = {
+			Description = "Swaybg Wallpaper Service";
+			After = [ "graphical-session.target" ];
+			PartOf = [ "graphical-session.target" ];
+		};
+		Service = {
+			# Run on all monitors to ensure the vertical monitor gets the wallpaper.
+			# QuickShell will overlay the robot mask on the main monitor only.
+			ExecStart = "${pkgs.swaybg}/bin/swaybg -m fill -i /home/barthmalemew/Pictures/Wallpapers/unit2.png";
+			Restart = "always";
 		};
 		Install = {
 			WantedBy = [ "graphical-session.target" ];

@@ -102,7 +102,7 @@ in
 				lsp.enable = true;
 				treesitter.enable = true;
 				format.enable = true;
-				format.type = "black";
+				format.type = ["black"];
 			};
 
 			clang = {

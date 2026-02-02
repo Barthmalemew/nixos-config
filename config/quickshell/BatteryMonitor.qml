@@ -20,6 +20,8 @@ Scope {
 
   property alias updateTimer: _updateTimer
 
+  property string acPath: ""
+
   Process {
     id: findBattery
     command: ["sh", "-c", "ls -1 /sys/class/power_supply | grep '^BAT' | head -n1"]
@@ -31,21 +33,39 @@ Scope {
     }
   }
 
-  Component.onCompleted: findBattery.running = true
+  Process {
+    id: findAC
+    command: ["sh", "-c", "ls -1 /sys/class/power_supply | grep -E 'AC|ADP' | head -n1"]
+    stdout: SplitParser {
+      onRead: data => {
+        const name = (data || "").trim();
+        if (name) root.acPath = "/sys/class/power_supply/" + name + "/online";
+      }
+    }
+  }
+
+  Component.onCompleted: {
+    findBattery.running = true;
+    findAC.running = true;
+  }
 
   Timer {
     id: _updateTimer
     interval: root.pollIntervalMs
-    running: root.batteryPath.length > 0
+    running: root.batteryPath.length > 0 || root.acPath.length > 0
     repeat: true
     triggeredOnStart: true
     onTriggered: {
-      capacityFile.reload()
-      statusFile.reload()
-      acFile.reload()
-      energyNowFile.reload()
-      energyFullFile.reload()
-      powerNowFile.reload()
+      if (root.batteryPath) {
+        capacityFile.reload()
+        statusFile.reload()
+        energyNowFile.reload()
+        energyFullFile.reload()
+        powerNowFile.reload()
+      }
+      if (root.acPath) {
+        acFile.reload()
+      }
     }
   }
   
@@ -65,7 +85,7 @@ Scope {
 
   FileView {
     id: acFile
-    path: "/sys/class/power_supply/AC/online"
+    path: root.acPath
     onLoaded: {
       const value = parseInt(text().trim())
       root.acOnline = isNaN(value) ? -1 : value

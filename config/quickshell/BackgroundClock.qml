@@ -22,7 +22,7 @@ PanelWindow {
 
 	focusable: false
 
-	WlrLayershell.layer: WlrLayer.Background
+	WlrLayershell.layer: WlrLayer.Bottom
 	WlrLayershell.exclusionMode: ExclusionMode.Ignore
 	WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 	WlrLayershell.namespace: "qs-bg-clock"
@@ -43,13 +43,13 @@ PanelWindow {
 	Image {
 		id: asuka
 		source: win.asukaSource
-		width: 80 * win.scale
-		height: 80 * win.scale
+		width: 120 * win.scale
+		height: 120 * win.scale
 		fillMode: Image.PreserveAspectFit
 		anchors.right: parent.right
-		anchors.rightMargin: win.width * 0.28 // Maintains 72% position but anchored right
-		y: 80 * win.scale
-		z: 5
+		anchors.rightMargin: parent.width * 0.20
+		y: 60 * win.scale
+		z: 5 // Moved behind foregroundMask (z:10)
 		smooth: true
 		visible: foregroundMask.status === Image.Ready
 	}

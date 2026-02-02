@@ -10,7 +10,7 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	visible: !!win.player
+	visible: true
 
 	Theme.Colors { id: colors }
 
