@@ -14,23 +14,39 @@ in
 	home.homeDirectory = "/home/barthmalemew";
 	
 	home.packages = with pkgs; [
+		# Terminal & Shell
 		fastfetch
 		git
-                python3
+		python3
 		gemini-cli
-                codex
-                rembg
 		opencode
-		vivaldi
-		customNvf
 		mandrid.packages.${pkgs.system}.default
-		bibata-cursors
-		swaybg
-                quickshell
+		
+		# Editors & Tools
+		customNvf
+		obsidian
+		
+		# Multimedia & Graphics
+		rembg
+		codex
 		grim
 		slurp
 		wl-clipboard
-		obsidian
+		
+		# Web
+		vivaldi
+		
+		# Desktop Environment
+		quickshell
+		swaybg
+		bibata-cursors
+		
+		# Migrated from configuration.nix
+		foot
+		wofi
+		yazi
+		swaylock
+		kdePackages.dolphin
 	];
 
 	fonts.fontconfig.enable = true;

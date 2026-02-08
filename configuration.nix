@@ -36,23 +36,25 @@
   programs.xwayland.enable = true;
 
   # System Packages
+  # Only install core system utilities here. User-specific apps (GUI tools, etc.)
+  # should go into home.nix to keep the system closure small.
   environment.systemPackages = with pkgs; [
-    xwayland
-    wofi
-    foot
-    yazi
+    # Core Utilities
     vim 
     wget
     git
-    swaylock
+    
+    # System Components
+    xwayland
     udiskie
     gvfs
     brightnessctl
     playerctl
     pavucontrol
-    kdePackages.dolphin
-    kdePackages.qtsvg
+    
+    # KDE/Qt Integration
     kdePackages.polkit-kde-agent-1
+    kdePackages.qtsvg
   ];
 
   environment.sessionVariables = {
