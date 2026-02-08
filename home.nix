@@ -154,8 +154,8 @@
 		}
 	'';
 
-	home.stateVersion = "25.11";
-	programs.home-manager.enable = true;
+	home.stateVersion = "24.11";
+
 
 	systemd.user.services.polkit-kde-agent = {
 		Unit = {
