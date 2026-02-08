@@ -95,6 +95,21 @@ in
 	# Start an ssh-agent on login (systemd user service).
 	services.ssh-agent.enable = true;
 
+	# Shell Aliases for NixOS Maintenance
+	home.shellAliases = {
+		# Rebuild the system using the flake in the current directory
+		rebuild = "sudo nixos-rebuild switch --flake .";
+		
+		# Update flake inputs
+		upd = "nix flake update";
+		
+		# Garbage collection (delete old generations)
+		clean = "nix-collect-garbage -d";
+		
+		# Quick navigation
+		conf = "cd ~/nixos-config";
+	};
+
 	# Cursor Theme
 	home.pointerCursor = {
 		gtk.enable = true;
