@@ -18,36 +18,29 @@
 
   outputs = { nixpkgs, home-manager, nvf, mandrid, ... }: 
   let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
     theme = import ./theme.nix;
-    pkgs = nixpkgs.legacyPackages.x86_64-linux;
     customNvf = nvf.lib.mkNeovim { inherit theme; };
-  in
-  {
-    nixosConfigurations.ladmin-laptop = nixpkgs.lib.nixosSystem {
-	modules = [ 
-    { nixpkgs.hostPlatform = "x86_64-linux"; }
-	./hosts/ladmin-laptop/default.nix 
-	home-manager.nixosModules.home-manager
-	{
-		home-manager.useGlobalPkgs = true;
-		home-manager.useUserPackages = true;
-		home-manager.extraSpecialArgs = { inherit nvf mandrid theme customNvf; };
-		home-manager.users.barthmalemew = import ./home.nix;
-	}
+
+    mkSystem = host: nixpkgs.lib.nixosSystem {
+      modules = [
+        { nixpkgs.hostPlatform = system; }
+        ./hosts/${host}/default.nix 
+        home-manager.nixosModules.home-manager
+        {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit nvf mandrid theme customNvf; };
+            home-manager.users.barthmalemew = import ./home.nix;
+        }
       ];
     };
-    nixosConfigurations.ladmin = nixpkgs.lib.nixosSystem {
-	modules = [ 
-    { nixpkgs.hostPlatform = "x86_64-linux"; }
-	./hosts/ladmin/default.nix 
-	home-manager.nixosModules.home-manager
-	{
-		home-manager.useGlobalPkgs = true;
-		home-manager.useUserPackages = true;
-		home-manager.extraSpecialArgs = { inherit nvf mandrid theme customNvf; };
-		home-manager.users.barthmalemew = import ./home.nix;
-	}
-      ];
+  in
+  {
+    nixosConfigurations = {
+      ladmin = mkSystem "ladmin";
+      ladmin-laptop = mkSystem "ladmin-laptop";
     };
   };
 }

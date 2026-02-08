@@ -95,7 +95,10 @@
         force = true;
     };
 
-    xdg.configFile."quickshell".source = ./config/quickshell;
+	xdg.configFile."quickshell" = {
+		source = ./config/quickshell;
+		recursive = true;
+	};
 	xdg.configFile."quickshell/theme/Colors.qml".text = ''
 		import QtQuick
 
@@ -194,7 +197,7 @@
 		Service = {
 			# Run on all monitors to ensure the vertical monitor gets the wallpaper.
 			# QuickShell will overlay the robot mask on the main monitor only.
-			ExecStart = "${pkgs.swaybg}/bin/swaybg -m fill -i /home/barthmalemew/Pictures/Wallpapers/unit2.png";
+			ExecStart = "${pkgs.swaybg}/bin/swaybg -m fill -i ${./assets/wallpapers/unit2.png}";
 			Restart = "always";
 		};
 		Install = {
