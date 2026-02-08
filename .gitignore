@@ -1,2 +1,22 @@
-# .mem_db/ (Tracking Mandrid memories)
+# Nix build results
+result
+result-*
+
+# Secrets (Just in case)
+*.pem
+*.key
+id_rsa
+id_ed25519
+/ssh/
+
+# Mandrid Memory Database (Local state)
+.mem_db/
+
+# Hardware Config (Machine Specific)
 hardware-configuration.nix
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
