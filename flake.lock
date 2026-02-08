@@ -123,11 +123,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1769658590,
-        "narHash": "sha256-ZnDW0HiPK/0YI1QiD6cU20pLhmSpmZ17CplPM47CbGQ=",
+        "lastModified": 1770546245,
+        "narHash": "sha256-gvexAaubCzb88+xfxhliyT1XlVGx6WZeC26Mh9MEj3g=",
         "owner": "Barthmalemew",
         "repo": "mandrid",
-        "rev": "34aecfc94157420d26598ab5566868690266bb21",
+        "rev": "aa92589bff0c849537683a3e4c86579ac315773c",
         "type": "github"
       },
       "original": {

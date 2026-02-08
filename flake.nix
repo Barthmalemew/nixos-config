@@ -12,7 +12,6 @@
     nvf.url = "path:./nvf";
     mandrid = {
         url = "github:Barthmalemew/mandrid";
-        inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
