@@ -19,8 +19,11 @@
   let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
-    theme = import ./theme.nix;
-    customNvf = nvf.lib.mkNeovim { inherit theme; };
+    
+    # We still import the old theme.nix temporarily to pass to NVF until we refactor NVF too.
+    # But for the system modules, we will use the new module system.
+    legacyTheme = import ./theme.nix;
+    customNvf = nvf.lib.mkNeovim { theme = legacyTheme; };
 
     mkSystem = host: nixpkgs.lib.nixosSystem {
       modules = [
@@ -30,8 +33,14 @@
         {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit nvf mandrid theme customNvf; };
-            home-manager.users.barthmalemew = import ./home.nix;
+            # We still pass customNvf, but 'theme' is now a module, not a special arg!
+            home-manager.extraSpecialArgs = { inherit nvf mandrid customNvf; };
+            home-manager.users.barthmalemew = {
+              imports = [ 
+                ./home.nix 
+                ./modules/theme.nix # Import our new theme module here!
+              ];
+            };
         }
       ];
     };
