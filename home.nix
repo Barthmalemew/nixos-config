@@ -103,6 +103,34 @@ in
 		size = 24;
 	};
 
+    # GTK Theme (Dark Mode)
+    gtk = {
+        enable = true;
+        theme = {
+            name = "Adwaita-dark";
+            package = pkgs.gnome-themes-extra;
+        };
+        iconTheme = {
+            name = "Adwaita";
+            package = pkgs.adwaita-icon-theme;
+        };
+    };
+
+    # Idle & Lock Management
+    services.swayidle = {
+        enable = true;
+        timeouts = [
+            # Lock after 10 minutes
+            { timeout = 600; command = "${pkgs.swaylock}/bin/swaylock -f"; }
+            # Turn off screens after 15 minutes (if locked)
+            { timeout = 900; command = "${pkgs.niri}/bin/niri msg action power-off-monitors"; resumeCommand = "${pkgs.niri}/bin/niri msg action power-on-monitors"; }
+        ];
+        events = [
+            { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
+            { event = "lock"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
+        ];
+    };
+
 	xdg.configFile."quickshell" = {
 		source = ./config/quickshell;
 		recursive = true;
