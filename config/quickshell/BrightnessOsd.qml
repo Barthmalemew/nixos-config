@@ -16,6 +16,8 @@ Scope {
 
 	Theme.Colors { id: colors }
 
+	readonly property real scale: colors.scale
+
 	property string backlightDevice: ""
 	property int brightness: 0
 	property int maxBrightness: 1
@@ -92,9 +94,9 @@ Scope {
 			exclusiveZone: 0
 
 			anchors.top: true
-			margins.top: (screen ? (screen.geometry ? screen.geometry.height : screen.height) : 1080) / 9
+			margins.top: (1080 * scale) / 9
 
-			readonly property real scale: (screen ? (screen.geometry ? screen.geometry.height : screen.height) : 1080) / 1080
+			readonly property real scale: colors.scale
 
 			WlrLayershell.layer: WlrLayer.Overlay
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore

@@ -14,8 +14,7 @@ PanelWindow {
 
 	Theme.Colors { id: colors }
 
-	// Resilient Scale Calculation
-	readonly property real scale: (win.screen ? (win.screen.geometry ? win.screen.geometry.height : win.screen.height) : 1080) / 1080
+	readonly property real scale: colors.scale
 
 	// --- POSITIONING ---
 	readonly property int anchorX: 45 * win.scale
@@ -54,7 +53,7 @@ PanelWindow {
 		property var act: function() {}
 		
 		width: isMain ? (70 * win.scale) : (50 * win.scale); height: 40 * win.scale
-		color: (mouse.pressed && enabled) ? colors.color4 : (mouse.containsMouse ? "#2a2c31" : colors.panelBg2)
+		color: (mouse.pressed && enabled) ? colors.color4 : (mouse.containsMouse ? colors.deepSurface : colors.panelBg2)
 		border.color: (mouse.containsMouse && enabled) ? colors.color4 : colors.panelBorder
 		border.width: mouse.containsMouse ? 2 : 1
 		radius: 2
@@ -253,7 +252,7 @@ PanelWindow {
 						Layout.preferredWidth: 130 * win.scale; Layout.preferredHeight: 75 * win.scale
 						Rectangle {
 							anchors.fill: parent
-							color: "#080809"
+							color: colors.darkSurface
 							border.color: colors.panelBorder
 							clip: true
 							Image {
@@ -281,7 +280,7 @@ PanelWindow {
 
 					Rectangle {
 						Layout.fillWidth: true; Layout.preferredHeight: 75 * win.scale
-						color: "#141518"
+						color: colors.midSurface
 						border.color: colors.panelBorder
 						ColumnLayout {
 							anchors.fill: parent; anchors.margins: 10 * win.scale; spacing: 0
@@ -362,7 +361,7 @@ PanelWindow {
 					Rectangle {
 						id: progTrack
 						Layout.fillWidth: true; Layout.preferredHeight: 6 * win.scale
-						color: "#0b0b0c"
+						color: colors.deepSurface
 						
 						Rectangle {
 							height: parent.height; width: Math.min(progTrack.width, progTrack.width * win.progressRatio)

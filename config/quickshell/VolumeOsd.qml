@@ -17,6 +17,8 @@ Scope {
 
 	Theme.Colors { id: colors }
 
+	readonly property real scale: colors.scale
+
 	readonly property var node: Pipewire.defaultAudioSink
 	readonly property real volume: node ? node.audio.volume : 0
 	readonly property bool muted: node ? node.audio.muted : true
@@ -70,10 +72,10 @@ Scope {
 			anchors.top: true
 			
 			// Resilient Geometry Access
-			margins.top: (screen ? (screen.geometry ? screen.geometry.height : screen.height) : 1080) / 9
+			margins.top: (1080 * scale) / 9
 
 			// Resilient Scale Calculation
-			readonly property real scale: (screen ? (screen.geometry ? screen.geometry.height : screen.height) : 1080) / 1080
+			readonly property real scale: colors.scale
 
 			WlrLayershell.layer: WlrLayer.Overlay
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore

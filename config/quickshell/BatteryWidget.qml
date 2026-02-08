@@ -13,8 +13,7 @@ PanelWindow {
 
 	visible: true
 
-	// Resilient Scale Calculation (Supports v0.1.0 and v0.2.1)
-	readonly property real scale: (win.screen ? (win.screen.geometry ? win.screen.geometry.height : win.screen.height) : 1080) / 1080
+	readonly property real scale: colors.scale
 
 	Theme.Colors { id: colors }
 
@@ -37,39 +36,20 @@ PanelWindow {
 
 	mask: Region { item: content }
 
-	BatteryMonitor {
-		id: battery
-	}
-	
 	readonly property var dev: UPower.displayDevice
 
-	readonly property int pct: battery.present ? battery.capacity : 100
-	readonly property string statusLower: (battery.status || "").toLowerCase()
-	readonly property bool isDischarging: battery.present && statusLower.indexOf("discharging") === 0
-	readonly property bool isChargingState: battery.present && statusLower.indexOf("charging") === 0
-	readonly property bool isNotCharging: battery.present && statusLower.indexOf("not charging") === 0
-	readonly property bool isFull: battery.present ? statusLower.indexOf("full") === 0 : true
-	readonly property bool hasAcState: battery.acOnline === 0 || battery.acOnline === 1
-	readonly property bool isPlugged: !battery.present || (hasAcState
-		? battery.acOnline === 1
-		: isChargingState || isFull || isNotCharging)
-	readonly property bool isCharging: battery.present && isChargingState
-	readonly property bool isLow: battery.present && !isPlugged && pct < 20
-	readonly property int fallbackEmptySeconds: (battery.energyNow > 0 && battery.powerNow > 0)
-		? Math.round((battery.energyNow / Math.abs(battery.powerNow)) * 3600)
-		: 0
-	readonly property int fallbackFullSeconds: (battery.energyFull > 0 && battery.powerNow > 0)
-		? Math.round((Math.max(0, battery.energyFull - battery.energyNow) / Math.abs(battery.powerNow)) * 3600)
-		: 0
-	readonly property int timeToFullSeconds: (win.dev && typeof win.dev.timeToFull === "number" && win.dev.timeToFull > 0)
-		? win.dev.timeToFull
-		: (battery.timeToFull > 0 ? battery.timeToFull : fallbackFullSeconds)
-	readonly property int timeToEmptySeconds: (win.dev && typeof win.dev.timeToEmpty === "number" && win.dev.timeToEmpty > 0)
-		? win.dev.timeToEmpty
-		: (battery.timeToEmpty > 0 ? battery.timeToEmpty : fallbackEmptySeconds)
-	readonly property bool showFullEta: isCharging || (isPlugged && timeToFullSeconds > 0)
-	readonly property string etaLabel: "ETA"
-	readonly property int etaSeconds: showFullEta ? timeToFullSeconds : timeToEmptySeconds
+	readonly property int pct: dev ? Math.round(dev.percentage) : 100
+	readonly property int state: dev ? dev.state : 0 // 0=Unknown, 1=Charging, 2=Discharging
+	
+	readonly property bool isDischarging: state === 2
+	readonly property bool isCharging: state === 1
+	readonly property bool isFull: state === 4
+	readonly property bool isPlugged: !isDischarging
+	
+	readonly property bool isLow: isDischarging && pct < 20
+	
+	readonly property int etaSeconds: isCharging ? dev.timeToFull : dev.timeToEmpty
+	readonly property bool showFullEta: isCharging || (isPlugged && dev.timeToFull > 0)
 	
 	readonly property color accentColor: isLow ? colors.color1 : (isPlugged ? colors.color4 : colors.color2) 
 	readonly property string statusLabel: isPlugged ? "EXT_BRIDGE" : (isLow ? "CRITICAL" : "INT_RESERVE")
@@ -162,7 +142,7 @@ PanelWindow {
 					font.family: "JetBrainsMono Nerd Font"
 				}
 				Text {
-					text: battery.present ? "RESERVE" : "STATIONARY"
+					text: (dev && dev.present) ? "RESERVE" : "STATIONARY"
 					color: win.accentColor
 					font.pixelSize: 10 * win.scale
 					font.weight: 900
@@ -217,7 +197,7 @@ PanelWindow {
 							readonly property bool isActive: (index / 8) < (win.pct / 100)
 							
 							ShapePath {
-								fillColor: isActive ? win.accentColor : "#151618"
+								fillColor: isActive ? win.accentColor : colors.emptyRail
 								strokeColor: colors.black
 								strokeWidth: 1
 								startX: 12 * win.scale; startY: 0

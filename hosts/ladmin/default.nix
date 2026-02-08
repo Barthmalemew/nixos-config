@@ -8,11 +8,16 @@
 
   networking.hostName = "ladmin";
 
-  # Power Management - Desktop Specific
+  nixpkgs.hostPlatform = "x86_64-linux";
+
+  theme.isLaptop = false;
+  theme.primaryMonitor = "DP-1";
+
+  # --- Power Management ---
   # On a desktop, we want performance over power saving.
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
-  # Define monitor layout for the Desktop
+  # --- Monitor Layout ---
   theme.monitors = {
     "primary" = {
       name = "DP-1";

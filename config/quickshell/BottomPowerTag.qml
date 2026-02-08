@@ -12,8 +12,7 @@ PanelWindow {
 
 	Theme.Colors { id: colors }
 
-	// Resilient Scale Calculation (Supports v0.1.0 and v0.2.1)
-	readonly property real scale: (win.screen ? (win.screen.geometry ? win.screen.geometry.height : win.screen.height) : 1080) / 1080
+	readonly property real scale: colors.scale
 
 	anchors {
 		bottom: true

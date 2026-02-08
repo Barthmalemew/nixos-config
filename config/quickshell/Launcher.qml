@@ -86,7 +86,7 @@ Scope {
 
             Rectangle {
                 anchors.fill: parent
-                color: "#cc000000"
+                color: colors.launcherOverlay
                 MouseArea { 
                     anchors.fill: parent
                     onClicked: root.close() 

@@ -2,21 +2,24 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import "theme" as Theme
+
 ShellRoot {
 	id: root
+
+	Theme.Colors { id: system }
 
 	// --- Tactical Screen Detection ---
 	readonly property var mainScreen: {
 		const screens = Quickshell.screens.values;
 		if (screens.length === 0) return null;
 		
-		// Priority 1: Specifically named primary outputs (Main monitors)
+		// Priority 1: Use the primary monitor defined in Nix
 		for (let i = 0; i < screens.length; i++) {
-			const name = screens[i].name || "";
-			if (name === "DP-1" || name === "eDP-1") return screens[i];
+			if (screens[i].name === system.primaryMonitor) return screens[i];
 		}
 
-		// Priority 2: First horizontal screen
+		// Priority 2: First horizontal screen (Fallback)
 		for (let i = 0; i < screens.length; i++) {
 			const s = screens[i];
 			const w = s.geometry ? s.geometry.width : s.width;
@@ -41,18 +44,24 @@ ShellRoot {
 
 	BottomPowerTag { screen: root.mainScreen }
 	
-	// Creation Order controls Stacking Order (Last = Top)
-	BackgroundClock { screen: root.mainScreen } // Layer 0 (Robot Mask)
-	BatteryWidget { screen: root.mainScreen }   // Layer 1 (Widgets)
-	MediaWidget { screen: root.mainScreen }     // Layer 1 (Widgets)
+	// Stacking Order: Last = Top.
+	// We want the widgets (Battery/Media) to be behind the Robot Mask (BackgroundClock).
+	BatteryWidget { 
+		screen: root.mainScreen 
+		visible: system.isLaptop
+	}
+	MediaWidget { screen: root.mainScreen }
+	BackgroundClock { screen: root.mainScreen }
 
 	VolumeOsd { 
 		modelData: root.mainScreen
 		isMain: true
+		visible: system.isLaptop
 	}
 
 	BrightnessOsd { 
 		modelData: root.mainScreen
 		isMain: true
+		visible: system.isLaptop
 	}
 }

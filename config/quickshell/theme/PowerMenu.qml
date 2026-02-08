@@ -16,7 +16,7 @@ Scope {
 	Theme.Colors { id: colors }
 
 	// Resolution Scaling Factor (Base 1080p)
-	readonly property real scale: (root.screenInfo ? root.screenInfo.height : 1080) / 1080
+	readonly property real scale: colors.scale
 
 	readonly property string loginctlBin: "/run/current-system/sw/bin/loginctl"
 	readonly property string systemctlBin: "/run/current-system/sw/bin/systemctl"
@@ -83,7 +83,7 @@ Scope {
 			// Dark overlay for dimming
 			Rectangle {
 				anchors.fill: parent
-				color: "#b0000000"
+				color: colors.launcherOverlay
 				opacity: root.shouldShow ? 1 : 0
 				Behavior on opacity { NumberAnimation { duration: 250 } }
 			}

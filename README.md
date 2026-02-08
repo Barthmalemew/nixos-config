@@ -38,11 +38,19 @@ rebuild
 ## 📂 Structure
 *   `flake.nix`: Entry point.
 *   `hosts/`: Hardware-specific configurations (Monitors, Power).
-*   `modules/`: Custom NixOS modules (Theme system).
-*   `home.nix`: User-space configuration (Apps, Services).
-*   `config/`: Dotfiles templates (Niri, Quickshell, Foot).
+*   `modules/`: Custom modules for system + Home Manager.
+*   `home.nix`: Home Manager entry (imports focused modules).
+*   `config/`: Dotfile templates (Niri base KDL, Quickshell, Foot).
 *   `nvf/`: Standalone Neovim configuration.
 
 ## 🎨 Theming
 The theme is centralized in `modules/theme.nix`.
 Changing a color there updates Niri borders, Quickshell UI, Terminal colors, and Neovim theme simultaneously.
+
+## 🧭 Notes
+- Niri uses a template at `config/niri/config.kdl`. Nix injects host monitor outputs
+  and theme colors via `config/niri/config.nix` and writes the final file to
+  `~/.config/niri/config.kdl`.
+- Quickshell stays as plain QML files in `config/quickshell/`. The only Nix
+  generation is `config/quickshell/theme/Colors.qml`, which maps the theme palette
+  into QML properties.
