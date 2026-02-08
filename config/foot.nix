@@ -12,7 +12,7 @@ in
     enable = true;
     settings = {
       main = {
-        font = "JetBrainsMono Nerd Font:size=11";
+        font = "${config.theme.font.monospace}:size=${toString config.theme.font.size}";
         pad = "12x12";
       };
 
