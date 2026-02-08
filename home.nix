@@ -54,11 +54,26 @@ in
 	
 	programs.git = {
 		enable = true;
+		
+		# Better diffs with syntax highlighting
+		delta = {
+			enable = true;
+			options = {
+				navigate = true;    # usage of n and N to move between diff sections
+				line-numbers = true;
+			};
+		};
+
         settings = {
             user = {
                 name = "barthmalemew";
                 email = "kevinrouse105@gmail.com";
             };
+            
+            # Modern defaults
+            init.defaultBranch = "main";
+            pull.rebase = true;
+            push.autoSetupRemote = true;
         };
 	};
 
@@ -79,24 +94,6 @@ in
 
 	# Start an ssh-agent on login (systemd user service).
 	services.ssh-agent.enable = true;
-
-	# Auto-load the GitHub key into the agent.
-	# (Works best with an unencrypted key; otherwise needs an askpass.)
-	systemd.user.services.ssh-add-github = {
-		Unit = {
-			Description = "Load GitHub SSH key";
-			After = [ "ssh-agent.service" "graphical-session.target" ];
-			PartOf = [ "graphical-session.target" ];
-		};
-		Service = {
-			Type = "oneshot";
-			Environment = [ "SSH_AUTH_SOCK=%t/ssh-agent" ];
-			ExecStart = "${pkgs.bash}/bin/sh -lc '${pkgs.openssh}/bin/ssh-add /home/barthmalemew/.ssh/id_ed25519 || true'";
-		};
-		Install = {
-			WantedBy = [ "graphical-session.target" ];
-		};
-	};
 
 	# Cursor Theme
 	home.pointerCursor = {
