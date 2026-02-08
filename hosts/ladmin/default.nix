@@ -8,6 +8,10 @@
 
   networking.hostName = "ladmin";
 
+  # Power Management - Desktop Specific
+  # On a desktop, we want performance over power saving.
+  powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
+
   # Define monitor layout for the Desktop
   theme.monitors = {
     "primary" = {
