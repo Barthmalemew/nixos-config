@@ -3,6 +3,12 @@
 let 
   # Shorthand to access the theme config we defined in modules/theme.nix
   theme = config.theme.colors;
+  
+  cursor = {
+    name = "Bibata-Modern-Classic";
+    package = pkgs.bibata-cursors;
+    size = 24;
+  };
 in
 {
 	imports = [
@@ -113,9 +119,13 @@ in
 	# Cursor Theme
 	home.pointerCursor = {
 		gtk.enable = true;
-		package = pkgs.bibata-cursors;
-		name = "Bibata-Modern-Classic";
-		size = 24;
+		x11.enable = true;
+		inherit (cursor) name package size;
+	};
+	
+	home.sessionVariables = {
+		XCURSOR_THEME = cursor.name;
+		XCURSOR_SIZE = toString cursor.size;
 	};
 
     # GTK Theme (KDE Breeze Style)

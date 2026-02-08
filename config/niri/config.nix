@@ -20,6 +20,7 @@ in
   xdg.configFile."niri/config.kdl".text = ''
     input {
         focus-follows-mouse
+        warp-mouse-to-focus
         keyboard {
             xkb {
                 layout "us"
