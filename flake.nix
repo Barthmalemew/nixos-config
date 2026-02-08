@@ -23,7 +23,9 @@
     # We still import the old theme.nix temporarily to pass to NVF until we refactor NVF too.
     # But for the system modules, we will use the new module system.
     legacyTheme = import ./theme.nix;
-    customNvf = nvf.lib.mkNeovim { theme = legacyTheme; };
+    
+    # Access the library from the specific system architecture now
+    customNvf = nvf.lib.${system}.mkNeovim { theme = legacyTheme; };
 
     mkSystem = host: nixpkgs.lib.nixosSystem {
       modules = [
