@@ -8,6 +8,7 @@ in
 	imports = [
 		./config/foot.nix
 		./config/opencode.nix
+		./config/niri/config.nix
 	];
 
 	home.username = "barthmalemew";
@@ -104,16 +105,6 @@ in
 		name = "Bibata-Modern-Classic";
 		size = 24;
 	};
-
-	# Config Links
-	xdg.configFile."niri/config.kdl" = {
-        text = 
-            let 
-                baseConfig = builtins.readFile ./config/niri/config.kdl;
-            in
-            builtins.replaceStrings [ "\"#c24f4f\"" ] [ "\"${theme.red}\"" ] baseConfig;
-        force = true;
-    };
 
 	xdg.configFile."quickshell" = {
 		source = ./config/quickshell;
