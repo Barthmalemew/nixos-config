@@ -1,7 +1,7 @@
-{ pkgs, theme, ... }:
+{ config, pkgs, ... }:
 
 let
-  palette = theme.colors;
+  palette = config.theme.colors;
 
   stripHash = s: builtins.replaceStrings [ "#" ] [ "" ] s;
   c = s: stripHash s;
