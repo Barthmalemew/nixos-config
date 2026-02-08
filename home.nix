@@ -103,16 +103,39 @@ in
 		size = 24;
 	};
 
-    # GTK Theme (Dark Mode)
+    # GTK Theme (KDE Breeze Style)
     gtk = {
         enable = true;
         theme = {
-            name = "Adwaita-dark";
-            package = pkgs.gnome-themes-extra;
+            name = "Breeze";
+            package = pkgs.kdePackages.breeze-gtk;
         };
         iconTheme = {
-            name = "Adwaita";
-            package = pkgs.adwaita-icon-theme;
+            name = "breeze-dark";
+            package = pkgs.kdePackages.breeze-icons;
+        };
+    };
+    
+    # Configure Swaylock to match theme
+    programs.swaylock = {
+        enable = true;
+        settings = {
+            image = "${./assets/wallpapers/unit2.png}";
+            scaling = "fill";
+            color = "${theme.background}";
+            
+            # Ring Colors (Matches Theme)
+            inside-color = "${theme.background}99"; # transparent background
+            ring-color = "${theme.panelBorder}";
+            line-color = "${theme.background}";
+            key-hl-color = "${theme.highlight}";
+            separator-color = "${theme.background}";
+            
+            # Text Colors
+            text-color = "${theme.foreground}";
+            text-caps-lock-color = "${theme.red}";
+            
+            daemonize = true;
         };
     };
 
