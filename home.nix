@@ -98,6 +98,11 @@ in
 		};
 	};
 
+	services.cliphist = {
+		enable = true;
+		allowImages = true;
+	};
+
 	# Start an ssh-agent on login (systemd user service).
 	services.ssh-agent.enable = true;
 

@@ -25,6 +25,8 @@ in
             xkb {
                 layout "us"
             }
+            repeat-delay 250
+            repeat-rate 40
         }
         touchpad {
             tap
@@ -198,6 +200,19 @@ in
         open-maximized false
         open-maximized-to-edges false
         open-fullscreen false
+    }
+
+    # Smart Floating Rules
+    window-rule {
+        match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+        match app-id=r#"^org\.gnome\.Calculator$"#
+        match app-id=r#"^org\.kde\.polkit-kde-authentication-agent-1$"#
+        match title=r#"^Open File$"#
+        match title=r#"^Save File$"#
+        
+        open-floating true
+        default-floating-width 600
+        default-floating-height 400
     }
   '';
 }
