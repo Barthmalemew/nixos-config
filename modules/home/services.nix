@@ -1,5 +1,29 @@
 { config, pkgs, ... }:
 
+let
+  niriEnvScript = pkgs.writeShellScript "dbus-niri-environment" ''
+    set -eu
+
+    # xdg-desktop-portal backend selection is keyed off XDG_CURRENT_DESKTOP.
+    # niri sets it to "niri", but xdg-desktop-portal-wlr advertises UseIn=wlroots.
+    # Add a wlroots marker so ScreenCast/Screenshot backends get picked up.
+    if [ "''${XDG_CURRENT_DESKTOP-}" != "" ]; then
+      case ":''${XDG_CURRENT_DESKTOP}:" in
+        *:wlroots:*) ;;
+        *) export XDG_CURRENT_DESKTOP="''${XDG_CURRENT_DESKTOP}:wlroots" ;;
+      esac
+    else
+      export XDG_CURRENT_DESKTOP="wlroots"
+    fi
+
+    # Make session environment visible to systemd user services (ConditionEnvironment)
+    ${pkgs.systemd}/bin/systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET || true
+
+    # Also update DBus activation environment.
+    ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET
+  '';
+in
+
 {
   # ---------------------------------------------------------------------------
   # BACKGROUND SERVICES
@@ -15,7 +39,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP NIRI_SOCKET";
+      ExecStart = [ "${niriEnvScript}" ];
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];
