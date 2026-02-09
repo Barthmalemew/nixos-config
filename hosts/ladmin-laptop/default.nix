@@ -14,15 +14,8 @@
   theme.isLaptop = true;
   theme.primaryMonitor = "eDP-1";
 
-  # --- Power Management (Overrides) ---
-  # thermald prevents overheating on Intel CPUs
-  services.thermald.enable = true;
-  
-  # Power profiles daemon conflicts with TLP
-  services.power-profiles-daemon.enable = false;
-
   # Laptop-specific hardware tweaks
-  services.libinput.enable = true; # Required for touchpad support in most places
+  services.libinput.enable = true; # Required for touchpad support
 
   # --- Monitor Layout ---
   theme.monitors = {

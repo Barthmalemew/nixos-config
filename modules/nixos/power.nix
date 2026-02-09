@@ -2,42 +2,17 @@
 
 {
   # ---------------------------------------------------------------------------
-  # ADVANCED POWER MANAGEMENT (TLP)
+  # BEST-PRACTICE POWER MANAGEMENT (Power Profiles Daemon)
   # ---------------------------------------------------------------------------
-  # We use TLP instead of auto-cpufreq because it provides deeper optimization
-  # for non-CPU components (PCIe, WiFi, USB, Audio).
+  # For modern Intel (Lunar Lake), power-profiles-daemon is the industry standard.
+  # It integrates with Intel HWP (Hardware P-States) and allows the hardware
+  # to manage its own power-saving 'Islands' much more efficiently than TLP.
 
-  services.tlp = {
-    enable = true;
-    settings = {
-      # CPU scaling governor
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+  services.power-profiles-daemon.enable = true;
+  services.tlp.enable = false;
 
-      # CPU energy/performance policy
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
-
-      # Intel CPU turbo boost (Disable on battery to save significant power)
-      CPU_BOOST_ON_AC = 1;
-      CPU_BOOST_ON_BAT = 0;
-
-      # Wireless power saving
-      WIFI_PWR_ON_AC = "off";
-      WIFI_PWR_ON_BAT = "on";
-
-      # PCIe Active State Power Management
-      PCIE_ASPM_ON_AC = "performance";
-      PCIE_ASPM_ON_BAT = "powersave";
-
-      # Audio power saving
-      SOUND_POWER_SAVE_ON_AC = 0;
-      SOUND_POWER_SAVE_ON_BAT = 1;
-      
-      # We respect the "no battery thresholds" rule.
-      # Charging is handled by the default hardware controller.
-    };
-  };
+  # thermald prevents overheating and helps with battery life on Intel CPUs.
+  services.thermald.enable = true;
 
   # Compressed RAM swap helps on systems with no disk swap.
   zramSwap = {
@@ -57,7 +32,7 @@
   # THE "20% PANIC" TRIGGER
   # ---------------------------------------------------------------------------
   # A small script that runs when the battery state changes. 
-  # If battery < 20% and discharging, it forces the system into "Low Power" mode.
+  # If battery < 20% and discharging, it forces the system into "power-saver" mode.
 
   systemd.services.battery-monitor = {
     description = "Monitor battery for 20% panic mode";
@@ -75,23 +50,21 @@
           echo "Battery Critical ($BAT%): Enabling Panic Mode"
           # Drop brightness to 20%
           ${pkgs.brightnessctl}/bin/brightnessctl s 20%
-          # Force CPU to ultra-low power
-          ${pkgs.tlp}/bin/tlp bat
+          # Switch to power-saver profile
+          ${pkgs.power-profiles-daemon}/bin/powerprofilesctl set power-saver
         fi
       '';
     };
   };
 
   # Trigger the script whenever battery state changes.
-  # udev can't do numeric comparisons reliably, so we run on change and let the
-  # oneshot script decide whether to act.
   services.udev.extraRules = ''
     ACTION=="change", SUBSYSTEM=="power_supply", KERNEL=="BAT*", RUN+="${pkgs.systemd}/bin/systemctl start battery-monitor.service"
   '';
 
   # Power Management tools
   environment.systemPackages = with pkgs; [
-    powertop # For manual monitoring
-    tlp
+    powertop 
+    power-profiles-daemon
   ];
 }

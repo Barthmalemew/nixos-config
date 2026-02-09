@@ -13,6 +13,7 @@
     obsidian
     obs-studio
     kdePackages.dolphin
+    wofi
     swaybg
     grim
     slurp

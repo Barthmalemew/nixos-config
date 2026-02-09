@@ -24,6 +24,7 @@ in
       ExecStart = "${pkgs.quickshell}/bin/qs";
       Restart = "on-failure";
       RestartSec = 2;
+      KillMode = "process"; # Don't kill apps when the shell restarts
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];

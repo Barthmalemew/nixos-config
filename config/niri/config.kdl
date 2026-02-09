@@ -49,7 +49,7 @@ binds {
 
     // --- APPLICATIONS ---
     Mod+Return { spawn "foot"; }
-    Mod+D { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+    Mod+D { spawn "wofi" "--show" "drun"; }
     Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" /home/barthmalemew/Pictures/Screenshots/Screenshot_$(date +'%Y-%m-%d_%H-%M-%S').png"; }
 
     // --- NAVIGATION ---
