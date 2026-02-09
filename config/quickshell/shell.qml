@@ -9,6 +9,10 @@ ShellRoot {
 
 	Theme.Colors { id: system }
 
-	// Stripped back to 0. 
-	// Ready for top bar implementation.
+	Instantiator {
+		model: Quickshell.screens
+		delegate: TopBar {
+			screen: modelData
+		}
+	}
 }
