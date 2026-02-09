@@ -13,7 +13,8 @@ Item {
     // Derived state
     property int focusedWorkspaceId: -1
     property int focusedWindowCount: 0
-    readonly property bool hasWindows: focusedWindowCount > 0
+    property var focusedActiveWindowId: null
+    readonly property bool hasWindows: (focusedWindowCount > 0) || (focusedActiveWindowId !== null && focusedActiveWindowId !== undefined)
 
     Theme.Colors { id: colors }
 
@@ -22,6 +23,7 @@ Item {
 
     function _unwrap(obj) {
         if (!obj) return null;
+        if (Array.isArray(obj)) return obj;
         if (obj.Ok !== undefined) return obj.Ok;
         if (obj.Err !== undefined) return null;
         return obj;
@@ -76,11 +78,25 @@ Item {
         return n;
     }
 
+    function _getActiveWindowId(workspaces, workspaceId) {
+        if (!Array.isArray(workspaces) || workspaceId < 0) return null;
+        for (let i = 0; i < workspaces.length; i++) {
+            const w = workspaces[i] || {};
+            const id = w.id ?? w.workspace_id ?? w.workspaceId ?? -1;
+            const idNum = typeof id === "number" ? id : parseInt(String(id), 10);
+            if (idNum !== workspaceId) continue;
+            const aw = w.active_window_id ?? w.activeWindowId ?? null;
+            return aw === null || aw === undefined ? null : aw;
+        }
+        return null;
+    }
+
     function _recompute() {
         const focusedId = _getFocusedWorkspaceId(_workspaces);
         focusedWorkspaceId = focusedId;
         const count = _countWindowsInWorkspace(_windows, focusedId);
         focusedWindowCount = count;
+        focusedActiveWindowId = _getActiveWindowId(_workspaces, focusedId);
     }
 
     // --- Event stream (preferred): low overhead + responsive
@@ -97,6 +113,20 @@ Item {
                     if (!line) continue;
                     let msg = null;
                     try { msg = JSON.parse(line); } catch (e) { continue; }
+
+                    // Some events include full lists; accept arrays directly.
+                    const unwrapped = root._unwrap(msg);
+                    if (Array.isArray(unwrapped) && unwrapped.length > 0) {
+                        const sample = unwrapped[0] || {};
+                        if (sample.app_id !== undefined || sample.appId !== undefined) {
+                            root._windows = unwrapped;
+                        } else if (sample.active_window_id !== undefined || sample.activeWindowId !== undefined) {
+                            root._workspaces = unwrapped;
+                        }
+                        root._recompute();
+                        continue;
+                    }
+
                     const ws = root._extractWorkspaces(msg);
                     if (ws) root._workspaces = ws;
                     const wins = root._extractWindows(msg);
@@ -120,9 +150,8 @@ Item {
         running: false
         onTriggered: {
             if (!root.active) return;
-            if (eventStream.running) return;
-            workspacesReq.running = true;
-            windowsReq.running = true;
+            if (!workspacesReq.running) workspacesReq.running = true;
+            if (!windowsReq.running) windowsReq.running = true;
         }
     }
 
@@ -133,8 +162,12 @@ Item {
             onRead: data => {
                 let msg = null;
                 try { msg = JSON.parse((data || "").trim()); } catch (e) { return; }
-                const ws = root._extractWorkspaces(msg);
-                if (ws) root._workspaces = ws;
+                const unwrapped = root._unwrap(msg);
+                if (Array.isArray(unwrapped)) root._workspaces = unwrapped;
+                else {
+                    const ws = root._extractWorkspaces(msg);
+                    if (ws) root._workspaces = ws;
+                }
                 root._recompute();
             }
         }
@@ -147,8 +180,12 @@ Item {
             onRead: data => {
                 let msg = null;
                 try { msg = JSON.parse((data || "").trim()); } catch (e) { return; }
-                const wins = root._extractWindows(msg);
-                if (wins) root._windows = wins;
+                const unwrapped = root._unwrap(msg);
+                if (Array.isArray(unwrapped)) root._windows = unwrapped;
+                else {
+                    const wins = root._extractWindows(msg);
+                    if (wins) root._windows = wins;
+                }
                 root._recompute();
             }
         }

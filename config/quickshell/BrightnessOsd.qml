@@ -15,8 +15,12 @@ Scope {
 	property bool isMain: false
 
 	Theme.Colors { id: colors }
+	
+	property bool enabled: true
 
 	readonly property real scale: colors.scale
+	readonly property int osdW: Math.round(68 * scale)
+	readonly property int osdH: Math.round(176 * scale)
 
 	property string backlightDevice: ""
 	property int brightness: 0
@@ -25,6 +29,8 @@ Scope {
 	
 	property bool adjusting: false
 	property bool shouldShowOsd: false
+	property bool osdVisible: false
+	property real offsetX: 0
 
 	Process {
 		id: findBacklight
@@ -41,7 +47,7 @@ Scope {
 
 	Timer {
 		id: updateTimer
-		interval: 2000
+		interval: root.osdVisible ? 200 : 2000
 		running: root.backlightDevice.length > 0
 		repeat: true
 		triggeredOnStart: true
@@ -72,29 +78,58 @@ Scope {
 
 	Process { id: setBrightness }
 
+	function showOsd() {
+		osdVisible = true;
+		shouldShowOsd = true;
+		offsetX = osdW + Math.round(30 * scale);
+		brightnessFile.reload();
+		maxBrightnessFile.reload();
+		Qt.callLater(() => { root.offsetX = 0; });
+		osdTimer.restart();
+	}
+
+	function hideOsd() {
+		shouldShowOsd = false;
+		offsetX = osdW + Math.round(30 * scale);
+		hideKick.restart();
+	}
+
 	onBrightnessChanged: {
 		if (!adjusting) {
-			shouldShowOsd = true;
-			osdTimer.restart();
+			showOsd();
 		}
 	}
 
 	Timer {
 		id: osdTimer
 		interval: 2500
-		onTriggered: root.shouldShowOsd = false
+		onTriggered: root.hideOsd()
 	}
 
-	LazyLoader {
-		active: root.shouldShowOsd && root.isMain
+	Timer {
+		id: hideKick
+		interval: 160
+		repeat: false
+		onTriggered: root.osdVisible = false
+	}
 
-		PanelWindow {
+	Behavior on offsetX {
+		NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+	}
+
+	PanelWindow {
 			screen: root.screen
-			visible: root.shouldShowOsd && root.isMain
+			visible: root.osdVisible && root.isMain && root.enabled
 			exclusiveZone: 0
 
+			anchors.right: true
 			anchors.top: true
-			margins.top: (1080 * scale) / 9
+			margins.right: Math.round(18 * scale)
+			margins.top: {
+				const s = root.screen;
+				const h = (s && s.geometry && s.geometry.height) ? s.geometry.height : (s && s.height ? s.height : 1080);
+				return Math.max(0, Math.round((h - root.osdH) / 2));
+			}
 
 			readonly property real scale: colors.scale
 
@@ -107,44 +142,52 @@ Scope {
 			color: "transparent"
 			mask: Region {}
 
-			implicitWidth: 550 * scale
-			implicitHeight: 60 * scale
+			implicitWidth: root.osdW
+			implicitHeight: root.osdH
 
 			Item {
 				anchors.fill: parent
+				transform: Translate { x: root.offsetX }
 
-				Shape {
+				Rectangle {
 					anchors.fill: parent
-					ShapePath {
-						fillColor: colors.panelBg
-						strokeColor: colors.color2
-						strokeWidth: 2
-						startX: 30 * scale; startY: 0
-						PathLine { x: 550 * scale; y: 0 }
-						PathLine { x: 520 * scale; y: 60 * scale }
-						PathLine { x: 0; y: 60 * scale }
-						PathLine { x: 30 * scale; y: 0 }
-					}
+					radius: 999
+					color: colors.panelBg
+					border.width: 1
+					border.color: colors.panelBorder
+					opacity: 0.96
 				}
 
-				RowLayout {
+				Rectangle {
+					anchors.left: parent.left
+					anchors.top: parent.top
+					anchors.bottom: parent.bottom
+					width: Math.max(2, Math.round(3 * scale))
+					color: colors.color2
+					opacity: 0.9
+				}
+
+				ColumnLayout {
 					anchors.fill: parent
-					anchors.leftMargin: 45 * scale
-					anchors.rightMargin: 45 * scale
-					spacing: 15 * scale
+					anchors.margins: Math.round(10 * scale)
+					spacing: Math.round(8 * scale)
 
 					Text {
+						Layout.alignment: Qt.AlignHCenter
 						text: "󰃠"
 						color: colors.color2
-						font.pixelSize: 22 * scale
+						font.pixelSize: 16 * scale
 						font.family: "JetBrainsMono Nerd Font"
 						font.weight: 950
 					}
 
 					Rectangle {
 						id: bar
-						Layout.fillWidth: true
-						implicitHeight: 12 * scale
+						Layout.alignment: Qt.AlignHCenter
+						implicitWidth: Math.round(10 * scale)
+						Layout.fillHeight: true
+						radius: 999
+						clip: true
 						color: colors.panelBg2
 						border.color: colors.panelBorder
 						border.width: 1
@@ -152,16 +195,14 @@ Scope {
 						Item {
 							anchors.fill: parent
 							clip: true
-							Shape {
-								anchors.fill: parent
-								ShapePath {
-									fillColor: colors.color2
-									startX: 6 * scale; startY: 0
-									PathLine { x: (bar.width * (root.displayedPercent / 100)); y: 0 }
-									PathLine { x: (bar.width * (root.displayedPercent / 100)) - (6 * scale); y: 12 * scale }
-									PathLine { x: 0; y: 12 * scale }
-									PathLine { x: 6 * scale; y: 0 }
-								}
+							Rectangle {
+								anchors.left: parent.left
+								anchors.right: parent.right
+								anchors.bottom: parent.bottom
+								anchors.margins: 1
+								height: Math.max(0, Math.min(bar.height - 2, Math.round((bar.height - 2) * Math.min(1, Math.max(0, root.displayedPercent / 100)))))
+								radius: 999
+								color: colors.color2
 							}
 						}
 
@@ -169,38 +210,25 @@ Scope {
 							anchors.fill: parent
 							onPressed: {
 								root.adjusting = true;
-								root.setBrightnessPercent((mouse.x / bar.width) * 100);
+								root.setBrightnessPercent((1 - (mouse.y / bar.height)) * 100);
 							}
 							onPositionChanged: {
 								if (!pressed) return
-								root.setBrightnessPercent((mouse.x / bar.width) * 100)
+								root.setBrightnessPercent((1 - (mouse.y / bar.height)) * 100)
 							}
 							onReleased: root.adjusting = false
 						}
 					}
 
 					Text {
-						text: root.backlightDevice.length > 0 ? (Math.round(root.displayedPercent) + "%") : "OFF"
+						Layout.alignment: Qt.AlignHCenter
+						text: root.backlightDevice.length > 0 ? String(Math.round(root.displayedPercent)) : "OFF"
 						color: colors.color2
-						font.pixelSize: 18 * scale
+						font.pixelSize: 10 * scale
 						font.weight: 950
 						font.family: "JetBrainsMono Nerd Font"
-						Layout.minimumWidth: 60 * scale
 					}
-				}
-
-				Text {
-					text: "OPTIC_LINK // BACKLIGHT_LEVEL"
-					color: colors.color2
-					font.pixelSize: 8 * scale
-					font.weight: 900
-					opacity: 0.5
-					anchors.bottom: parent.top
-					anchors.left: parent.left
-					anchors.leftMargin: 35 * scale
-					anchors.bottomMargin: 2 * scale
 				}
 			}
 		}
-	}
 }

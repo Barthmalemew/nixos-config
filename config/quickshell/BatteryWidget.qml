@@ -11,8 +11,6 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	visible: true
-
 	readonly property real scale: colors.scale
 
 	Theme.Colors { id: colors }
@@ -36,10 +34,16 @@ PanelWindow {
 
 	mask: Region { item: content }
 
+	property bool enabled: true
+	visible: enabled
+
+	// UPower is the most reliable interface for battery percentage/state and ETA.
 	readonly property var dev: UPower.displayDevice
 
-	readonly property int pct: dev ? Math.round(dev.percentage) : 100
-	readonly property int state: dev ? dev.state : 0 // 0=Unknown, 1=Charging, 2=Discharging
+	// Some UPower bindings report percentage as 0..1, others as 0..100.
+	readonly property real pctRaw: dev ? dev.percentage : 1.0
+	readonly property int pct: dev ? Math.round((pctRaw <= 1.0) ? (pctRaw * 100) : pctRaw) : 100
+	readonly property int state: dev ? dev.state : 0 // 0=Unknown, 1=Charging, 2=Discharging, 4=Fully charged
 	
 	readonly property bool isDischarging: state === 2
 	readonly property bool isCharging: state === 1
@@ -48,14 +52,15 @@ PanelWindow {
 	
 	readonly property bool isLow: isDischarging && pct < 20
 	
-	readonly property int etaSeconds: isCharging ? dev.timeToFull : dev.timeToEmpty
-	readonly property bool showFullEta: isCharging || (isPlugged && dev.timeToFull > 0)
+	readonly property int etaSeconds: isCharging ? (dev ? dev.timeToFull : 0) : (dev ? dev.timeToEmpty : 0)
+	readonly property bool showFullEta: isCharging || (isPlugged && (dev ? dev.timeToFull : 0) > 0)
+	readonly property string etaLabel: showFullEta ? "ETA_FULL" : "ETA_EMPTY"
 	
 	readonly property color accentColor: isLow ? colors.color1 : (isPlugged ? colors.color4 : colors.color2) 
 	readonly property string statusLabel: isPlugged ? "EXT_BRIDGE" : (isLow ? "CRITICAL" : "INT_RESERVE")
 
 	function formatTime(seconds) {
-		if (seconds <= 0) return "--:--";
+		if (!seconds || seconds <= 0) return "--:--";
 		const h = Math.floor(seconds / 3600);
 		const m = Math.floor((seconds % 3600) / 60);
 		if (h > 0) return h + "H " + m + "M";
@@ -171,8 +176,9 @@ PanelWindow {
 						font.weight: 950
 						font.letterSpacing: 1.4 * win.scale
 						font.wordSpacing: 1 * win.scale
+						elide: Text.ElideRight
+						Layout.fillWidth: true
 					}
-					Item { Layout.fillWidth: true }
 					Text {
 						text: win.etaLabel + ": " + win.formatTime(win.etaSeconds)
 						color: colors.foreground
@@ -180,6 +186,10 @@ PanelWindow {
 						font.weight: 800
 						font.letterSpacing: 0.8 * win.scale
 						font.wordSpacing: 1 * win.scale
+						horizontalAlignment: Text.AlignRight
+						elide: Text.ElideLeft
+						Layout.preferredWidth: 160 * win.scale
+						Layout.maximumWidth: 200 * win.scale
 					}
 				}
 
@@ -188,23 +198,26 @@ PanelWindow {
 					Layout.fillWidth: true
 					height: 24 * win.scale
 					spacing: 1 
+					clip: true
 					
 					Repeater {
 						model: 8 
 						Shape {
-							width: (railContainer.width - 7) / 8
+							id: rail
+							width: Math.max(1, (railContainer.width - 7) / 8)
 							height: 24 * win.scale
 							readonly property bool isActive: (index / 8) < (win.pct / 100)
+							readonly property real cut: Math.min(12 * win.scale, width)
 							
 							ShapePath {
 								fillColor: isActive ? win.accentColor : colors.emptyRail
 								strokeColor: colors.black
 								strokeWidth: 1
-								startX: 12 * win.scale; startY: 0
+								startX: rail.cut; startY: 0
 								PathLine { x: width; y: 0 }
-								PathLine { x: width - (12 * win.scale); y: 24 * win.scale }
+								PathLine { x: width - rail.cut; y: 24 * win.scale }
 								PathLine { x: 0; y: 24 * win.scale }
-								PathLine { x: 12 * win.scale; y: 0 }
+								PathLine { x: rail.cut; y: 0 }
 							}
 						}
 					}
@@ -220,15 +233,18 @@ PanelWindow {
 						font.letterSpacing: 0.8 * win.scale
 						font.wordSpacing: 1 * win.scale
 						opacity: 0.5
+						elide: Text.ElideRight
+						Layout.fillWidth: true
 					}
-					Item { Layout.fillWidth: true }
 					Text {
-						text: (win.dev && typeof win.dev.voltage === "number" ? win.dev.voltage.toFixed(1) : "0.0") + "V"
+						text: ((win.dev && typeof win.dev.voltage === "number") ? win.dev.voltage.toFixed(1) : "0.0") + "V"
 						color: colors.muted
 						font.pixelSize: 7 * win.scale
 						font.weight: 800
 						font.letterSpacing: 0.8 * win.scale
 						opacity: 0.5
+						horizontalAlignment: Text.AlignRight
+						Layout.preferredWidth: 70 * win.scale
 					}
 				}
 			}

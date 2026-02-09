@@ -21,18 +21,7 @@ Scope {
 	readonly property string loginctlBin: "/run/current-system/sw/bin/loginctl"
 	readonly property string systemctlBin: "/run/current-system/sw/bin/systemctl"
 
-	Process {
-		id: powerProc
-		stdout: SplitParser {
-			onRead: data => console.warn("power menu stdout: " + data)
-		}
-		stderr: SplitParser {
-			onRead: data => console.warn("power menu stderr: " + data)
-		}
-		onExited: (code, status) => {
-			console.warn("power menu exit: " + code + " status " + status)
-		}
-	}
+	Process { id: powerProc }
 
 	function close() {
 		root.shouldShow = false;

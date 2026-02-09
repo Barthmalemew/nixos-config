@@ -42,6 +42,9 @@ Scope {
 
     Theme.Colors { id: colors }
 
+    // Resolution scaling factor (base 1080p logical)
+    readonly property real scale: colors.scale
+
     ListModel {
         id: filteredModel
         function updateFilter(text) {
@@ -96,36 +99,36 @@ Scope {
             Item {
                 id: launcherContainer
                 anchors.centerIn: parent
-                width: 500
-                height: 600
+                width: 500 * root.scale
+                height: 600 * root.scale
 
                 Shape {
                     id: headerShape
                     width: launcherContainer.width
-                    height: 50
+                    height: 50 * root.scale
                     anchors.top: parent.top
                     ShapePath {
                         fillColor: colors.color1
                         startX: 0; startY: 0
                         PathLine { x: headerShape.width; y: 0 }
-                        PathLine { x: headerShape.width - 20; y: 50 }
-                        PathLine { x: 0; y: 50 }
+                        PathLine { x: headerShape.width - (20 * root.scale); y: headerShape.height }
+                        PathLine { x: 0; y: headerShape.height }
                         PathLine { x: 0; y: 0 }
                     }
                     Text {
                         anchors.centerIn: parent
                         text: "TACTICAL_LOADER // UNIT_02"
                         color: colors.black
-                        font.pixelSize: 13
+                        font.pixelSize: 13 * root.scale
                         font.weight: 900
-                        font.letterSpacing: 2
+                        font.letterSpacing: 2 * root.scale
                         font.family: "JetBrainsMono Nerd Font"
                     }
                 }
 
                 Rectangle {
                     anchors.top: parent.top
-                    anchors.topMargin: 50
+                    anchors.topMargin: headerShape.height
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -135,12 +138,12 @@ Scope {
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: 15
-                        spacing: 15
+                        anchors.margins: 15 * root.scale
+                        spacing: 15 * root.scale
 
                         Rectangle {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 45
+                            Layout.preferredHeight: 45 * root.scale
                             color: colors.panelBg2
                             border.color: input.activeFocus ? colors.color4 : colors.panelBorder
                             border.width: 1
@@ -148,10 +151,10 @@ Scope {
                             TextInput {
                                 id: input
                                 anchors.fill: parent
-                                anchors.margins: 10
+                                anchors.margins: 10 * root.scale
                                 verticalAlignment: TextInput.AlignVCenter
                                 color: colors.foreground
-                                font.pixelSize: 18
+                                font.pixelSize: 18 * root.scale
                                 font.family: "JetBrainsMono Nerd Font"
                                 selectionColor: colors.color4
                                 focus: true
@@ -195,7 +198,7 @@ Scope {
                             delegate: Item {
                                 id: del
                                 width: listView.width
-                                height: 55
+                                height: 55 * root.scale
                                 
                                 function launch() {
                                     model.entry.execute();
@@ -211,13 +214,13 @@ Scope {
 
                                 RowLayout {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 10
-                                    anchors.rightMargin: 10
-                                    spacing: 15
+                                    anchors.leftMargin: 10 * root.scale
+                                    anchors.rightMargin: 10 * root.scale
+                                    spacing: 15 * root.scale
 
                                     IconImage {
                                         source: model.icon ? "image://icon/" + model.icon : "image://icon/application-x-executable"
-                                        width: 32; height: 32
+                                        width: 32 * root.scale; height: 32 * root.scale
                                         Layout.alignment: Qt.AlignVCenter
                                     }
 
@@ -227,14 +230,14 @@ Scope {
                                         Text {
                                             text: model.name.toUpperCase()
                                             color: del.ListView.isCurrentItem ? colors.color4 : colors.foreground
-                                            font.pixelSize: 14
+                                            font.pixelSize: 14 * root.scale
                                             font.weight: 700
                                             font.family: "JetBrainsMono Nerd Font"
                                         }
                                         Text {
                                             text: model.genericName.toUpperCase()
                                             color: colors.muted
-                                            font.pixelSize: 9
+                                            font.pixelSize: 9 * root.scale
                                             font.family: "JetBrainsMono Nerd Font"
                                             opacity: 0.6
                                         }

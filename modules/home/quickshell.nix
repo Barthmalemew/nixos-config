@@ -1,48 +1,51 @@
-{ config, lib, pkgs, ... }:
+{ osConfig, lib, pkgs, ... }:
 
 let
-  theme = config.theme.colors;
+  # Access the theme and hardware truth from the NixOS configuration
+  theme = osConfig.theme.colors;
+  isLaptop = osConfig.theme.isLaptop;
+  primaryMonitor = osConfig.theme.primaryMonitor;
   
-  # Find the primary monitor config
-  primaryMonitorCfg = lib.findFirst (m: m.name == config.theme.primaryMonitor) {} (lib.attrValues config.theme.monitors);
+  # Find the primary monitor config in the system monitors list
+  primaryMonitorCfg = lib.findFirst (m: m.name == primaryMonitor) {} (lib.attrValues osConfig.theme.monitors);
   
-  # Extract height from mode string like "2880x1800@120.000"
-  # We do this by splitting on '@' then 'x' and taking the second element.
-  heightStr = if primaryMonitorCfg ? mode && primaryMonitorCfg.mode != null 
-              then lib.last (lib.splitString "x" (lib.head (lib.splitString "@" primaryMonitorCfg.mode)))
-              else "1080";
+  # Extract physical height from mode string like "2880x1800@120.000"
+  physHeightStr = if primaryMonitorCfg ? mode && primaryMonitorCfg.mode != null 
+                  then lib.last (lib.splitString "x" (lib.head (lib.splitString "@" primaryMonitorCfg.mode)))
+                  else "1080";
               
-  height = lib.toInt heightStr;
+  physHeight = lib.toInt physHeightStr;
   
-  # Nix float calculation
-  calcScale = h: (1.0 * h) / 1080.0;
-  scale = calcScale height;
+  # Account for the monitor's scale factor to get LOGICAL height.
+  # If 1800p is scaled by 1.66, logical height is 1080.
+  # Quickshell handles compositor scaling automatically, so our tactical 'scale'
+  # multiplier should be based on logical units relative to 1080p.
+  monitorScale = if primaryMonitorCfg ? scale then primaryMonitorCfg.scale else 1.0;
+  logicalHeight = (1.0 * physHeight) / monitorScale;
+  
+  # Tactical Scale = Logical Height / 1080
+  # For your laptop: 1080 / 1080 = 1.0 (Correct)
+  scale = logicalHeight / 1080.0;
 
-  # Absolute paths for assets to ensure they load reliably via Systemd
+  # Absolute paths for assets
   asukaPath = ../../config/quickshell/assets/asuka.png;
   maskPath = ../../config/quickshell/assets/unit2-foreground.png;
-in
 
-{
-  # ---------------------------------------------------------------------------
-  # QUICKSHELL CONFIGURATION
-  # ---------------------------------------------------------------------------
-  # Keep QML files as-is in config/quickshell; only inject theme colors here.
-
-  xdg.configFile."quickshell" = {
-    source = ../../config/quickshell;
-    recursive = true;
-  };
-
-  xdg.configFile."quickshell/theme/Colors.qml".text = ''
+  # Define the generated Colors.qml content
+  colorsQml = ''
     import QtQuick
 
     QtObject {
-      readonly property bool isLaptop: ${if config.theme.isLaptop then "true" else "false"}
-      readonly property string primaryMonitor: "${config.theme.primaryMonitor}"
+      readonly property bool isLaptop: ${if isLaptop then "true" else "false"}
+      readonly property string primaryMonitor: "${primaryMonitor}"
       readonly property real scale: ${toString scale}
 
-      # Absolute Asset Paths
+      // Tooling paths
+      readonly property string niriBin: "${pkgs.niri}/bin/niri"
+      readonly property string nmcliBin: "${pkgs.networkmanager}/bin/nmcli"
+      readonly property string wpctlBin: "${pkgs.wireplumber}/bin/wpctl"
+
+      // Absolute Asset Paths
       readonly property url asukaPath: "file://${asukaPath}"
       readonly property url maskPath: "file://${maskPath}"
 
@@ -56,7 +59,7 @@ in
       readonly property string muted: "${theme.muted}"
       readonly property string outline: "${theme.outline}"
 
-      # Tactical Elements
+      // Tactical Elements
       readonly property string launcherOverlay: "#cc000000"
       readonly property string emptyRail: "#151618"
       readonly property string darkSurface: "#080809"
@@ -103,4 +106,25 @@ in
       readonly property string brightWhite: foreground
     }
   '';
+
+  # Assemble the entire Quickshell config directory as a single derivation
+  quickshellConfig = pkgs.runCommand "quickshell-config" {} ''
+    mkdir -p $out
+    cp -r ${../../config/quickshell}/. $out/
+    mkdir -p $out/theme
+    chmod -R +w $out/theme
+    cat > $out/theme/Colors.qml <<EOF
+    ${colorsQml}
+    EOF
+  '';
+in
+
+{
+  # ---------------------------------------------------------------------------
+  # QUICKSHELL CONFIGURATION
+  # ---------------------------------------------------------------------------
+  xdg.configFile."quickshell" = {
+    source = quickshellConfig;
+    force = true;
+  };
 }

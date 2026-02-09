@@ -15,7 +15,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP";
+      ExecStart = "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP NIRI_SOCKET";
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];

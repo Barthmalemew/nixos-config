@@ -43,25 +43,26 @@ ShellRoot {
 	}
 
 	BottomPowerTag { screen: root.mainScreen }
+	TopStatusBar { screen: root.mainScreen }
 	
 	// Stacking Order: Last = Top.
-	// We want the widgets (Battery/Media) to be behind the Robot Mask (BackgroundClock).
+	// Background elements first, foreground widgets last.
+	BackgroundClock { screen: root.mainScreen }
 	BatteryWidget { 
 		screen: root.mainScreen 
-		visible: system.isLaptop
+		enabled: system.isLaptop
 	}
 	MediaWidget { screen: root.mainScreen }
-	BackgroundClock { screen: root.mainScreen }
 
 	VolumeOsd { 
 		modelData: root.mainScreen
 		isMain: true
-		visible: system.isLaptop
+		enabled: system.isLaptop
 	}
 
 	BrightnessOsd { 
 		modelData: root.mainScreen
 		isMain: true
-		visible: system.isLaptop
+		enabled: system.isLaptop
 	}
 }
