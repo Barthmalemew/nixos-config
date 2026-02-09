@@ -1,9 +1,11 @@
-{ config, osConfig, nvf, mandrid, pkgs, ... }:
+{ config, osConfig, lib, nvf, mandrid, pkgs, ... }:
+ 
+ let
+   themeHelper = import ./theme-helper.nix { inherit lib osConfig; };
+   cursor = config.home.pointerCursor;
+   customNvf = nvf.lib.mkNeovim { theme = { colors = themeHelper.colors; }; };
+ in
 
-let
-  cursor = config.home.pointerCursor;
-  customNvf = nvf.lib.mkNeovim { theme = { colors = osConfig.theme.colors; }; };
-in
 
 {
   # ---------------------------------------------------------------------------

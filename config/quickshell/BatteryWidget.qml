@@ -11,7 +11,10 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	readonly property real scale: colors.scale
+	property var screen
+	// property bool enabled: true  (Already exists)
+	visible: enabled
+	screen: win.screen
 
 	Theme.Colors { id: colors }
 

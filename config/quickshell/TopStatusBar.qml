@@ -5,12 +5,15 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 
+import Quickshell.Services.UPower
+
 import "theme" as Theme
 
 Scope {
     id: root
 
     property var screen
+    property bool enabled: true
 
     Theme.Colors { id: colors }
     readonly property real scale: colors.scale
@@ -53,7 +56,7 @@ Scope {
     // --- Models ---
     NiriActivity {
         id: niri
-        active: true
+        active: root.enabled
         onHasWindowsChanged: root.shouldShow = niri.hasWindows
         Component.onCompleted: root.shouldShow = niri.hasWindows
     }
@@ -97,8 +100,11 @@ Scope {
         onTriggered: { if (!nmcli.running) nmcli.running = true; }
     }
 
-    // Battery (re-use existing monitor)
-    BatteryMonitor { id: batt }
+    // Battery (UPower service)
+    readonly property var batt: UPower.displayDevice
+    readonly property real battPctRaw: batt ? batt.percentage : 1.0
+    readonly property int battPct: batt ? Math.round((battPctRaw <= 1.0) ? (battPctRaw * 100) : battPctRaw) : 100
+    readonly property bool battLow: (batt && batt.state === 2 && battPct < 20)
 
     // Clock
     property string timeText: "…"
@@ -114,7 +120,7 @@ Scope {
     }
 
     LazyLoader {
-        active: true
+        active: root.enabled
 
         PanelWindow {
             id: win
@@ -221,8 +227,8 @@ Scope {
 
                             Text {
                                 visible: colors.isLaptop
-                                text: batt.present ? (batt.capacity + "%") : "…"
-                                color: batt.present && batt.capacity <= 20 && batt.status === "Discharging" ? colors.color1 : colors.foreground
+                                text: (batt && batt.present) ? (root.battPct + "%") : "…"
+                                color: root.battLow ? colors.color1 : colors.foreground
                                 font.pixelSize: 10 * root.scale
                                 font.weight: 850
                                 font.family: "JetBrainsMono Nerd Font"

@@ -1,31 +1,39 @@
 { osConfig, lib, pkgs, ... }:
+ 
+ let
+-  # Access the theme and hardware truth from the NixOS configuration
+-  theme = osConfig.theme.colors;
+-  isLaptop = osConfig.theme.isLaptop;
+-  primaryMonitor = osConfig.theme.primaryMonitor;
+-  
+-  # Find the primary monitor config in the system monitors list
+-  primaryMonitorCfg = lib.findFirst (m: m.name == primaryMonitor) {} (lib.attrValues osConfig.theme.monitors);
+-  
+-  # Extract physical height from mode string like "2880x1800@120.000"
+-  physHeightStr = if primaryMonitorCfg ? mode && primaryMonitorCfg.mode != null 
+-                  then lib.last (lib.splitString "x" (lib.head (lib.splitString "@" primaryMonitorCfg.mode)))
+-                  else "1080";
+-              
+-  physHeight = lib.toInt physHeightStr;
+-  
+-  # Account for the monitor's scale factor to get LOGICAL height.
+-  # If 1800p is scaled by 1.66, logical height is 1080.
+-  # Quickshell handles compositor scaling automatically, so our tactical 'scale'
+-  # multiplier should be based on logical units relative to 1080p.
+-  monitorScale = if primaryMonitorCfg ? scale then primaryMonitorCfg.scale else 1.0;
+-  logicalHeight = (1.0 * physHeight) / monitorScale;
+-  
+-  # Tactical Scale = Logical Height / 1080
+-  # For your laptop: 1080 / 1080 = 1.0 (Correct)
+-  scale = logicalHeight / 1080.0;
++  themeHelper = import ./theme-helper.nix { inherit lib osConfig; };
++  theme = themeHelper.colors;
++  isLaptop = osConfig.theme.isLaptop;
++  primaryMonitor = themeHelper.primaryMonitorName;
++  scale = themeHelper.scale;
+ 
+   # Absolute paths for assets
 
-let
-  # Access the theme and hardware truth from the NixOS configuration
-  theme = osConfig.theme.colors;
-  isLaptop = osConfig.theme.isLaptop;
-  primaryMonitor = osConfig.theme.primaryMonitor;
-  
-  # Find the primary monitor config in the system monitors list
-  primaryMonitorCfg = lib.findFirst (m: m.name == primaryMonitor) {} (lib.attrValues osConfig.theme.monitors);
-  
-  # Extract physical height from mode string like "2880x1800@120.000"
-  physHeightStr = if primaryMonitorCfg ? mode && primaryMonitorCfg.mode != null 
-                  then lib.last (lib.splitString "x" (lib.head (lib.splitString "@" primaryMonitorCfg.mode)))
-                  else "1080";
-              
-  physHeight = lib.toInt physHeightStr;
-  
-  # Account for the monitor's scale factor to get LOGICAL height.
-  # If 1800p is scaled by 1.66, logical height is 1080.
-  # Quickshell handles compositor scaling automatically, so our tactical 'scale'
-  # multiplier should be based on logical units relative to 1080p.
-  monitorScale = if primaryMonitorCfg ? scale then primaryMonitorCfg.scale else 1.0;
-  logicalHeight = (1.0 * physHeight) / monitorScale;
-  
-  # Tactical Scale = Logical Height / 1080
-  # For your laptop: 1080 / 1080 = 1.0 (Correct)
-  scale = logicalHeight / 1080.0;
 
   # Absolute paths for assets
   asukaPath = ../../config/quickshell/assets/asuka.png;

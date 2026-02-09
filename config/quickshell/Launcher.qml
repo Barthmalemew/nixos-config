@@ -9,6 +9,7 @@ import "theme" as Theme
 Scope {
     id: root
     property var screenInfo
+    property bool enabled: true
     property bool shouldShow: false
     property bool hasFocus: false
     property var inputRef: null

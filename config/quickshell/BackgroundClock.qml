@@ -9,7 +9,10 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	visible: true
+	property var screen
+	property bool enabled: true
+	visible: enabled
+	screen: win.screen
 
 	color: "transparent"
 
