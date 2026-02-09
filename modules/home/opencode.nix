@@ -5,7 +5,7 @@
   # Use builtins.toJSON to ensure valid JSON generation from Nix data structures.
   xdg.configFile."opencode/config.json".text = builtins.toJSON {
     "$schema" = "https://opencode.ai/config.json";
-    plugin = [ "opencode-gemini-auth@latest" ];
+    plugin = [ "opencode-gemini-auth@latest" "./plugins/mandrid-pack.js" ];
     
     permission = {
       read = "allow";

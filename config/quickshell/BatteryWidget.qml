@@ -11,12 +11,11 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	property var screen
-	// property bool enabled: true  (Already exists)
+	property bool enabled: true
 	visible: enabled
-	screen: win.screen
 
 	Theme.Colors { id: colors }
+	readonly property real scale: colors.scale
 
 	anchors {
 		right: true
@@ -36,9 +35,6 @@ PanelWindow {
 	WlrLayershell.namespace: "qs-battery-tactical"
 
 	mask: Region { item: content }
-
-	property bool enabled: true
-	visible: enabled
 
 	// UPower is the most reliable interface for battery percentage/state and ETA.
 	readonly property var dev: UPower.displayDevice

@@ -10,10 +10,8 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	property var screen
 	property bool enabled: true
 	visible: enabled
-	screen: win.screen
 
 	Theme.Colors { id: colors }
 
@@ -38,7 +36,7 @@ PanelWindow {
 	implicitWidth: 440 * win.scale
 	implicitHeight: 175 * win.scale
 
-	// Move to Bottom layer to stay with wallpaper
+	// Move to Bottom layer to stay behind windows but in front of clock
 	WlrLayershell.layer: WlrLayer.Bottom
 	WlrLayershell.exclusionMode: ExclusionMode.Ignore
 	WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand

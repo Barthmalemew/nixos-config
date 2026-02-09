@@ -9,10 +9,8 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	property var screen
 	property bool enabled: true
 	visible: enabled
-	screen: win.screen
 
 	color: "transparent"
 
@@ -25,8 +23,9 @@ PanelWindow {
 
 	focusable: false
 
-	WlrLayershell.layer: WlrLayer.Bottom
+	WlrLayershell.layer: WlrLayer.Background
 	WlrLayershell.exclusionMode: ExclusionMode.Ignore
+
 	WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 	WlrLayershell.namespace: "qs-bg-clock"
 	

@@ -1,7 +1,8 @@
-{ osConfig, pkgs, ... }:
+{ osConfig, lib, pkgs, ... }:
 
 let
-  theme = osConfig.theme.colors;
+  themeHelper = import ./theme-helper.nix { inherit lib osConfig; };
+  theme = themeHelper.colors;
 in
 
 {

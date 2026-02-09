@@ -139,11 +139,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1770583945,
-        "narHash": "sha256-ouXG+EeGc+xNG/4pYmDywmTdqkT3+cCZ4Y3VoUL/XnA=",
+        "lastModified": 1770606813,
+        "narHash": "sha256-rbE0ztIuGBqWqFGcAZdN00p0kSMOUcVHf0CXrXkPiq8=",
         "owner": "Barthmalemew",
         "repo": "mandrid",
-        "rev": "32fd2cf2ce965c7def83ca74bd5f083128f27543",
+        "rev": "f433af75545e17825bd581b5faabc7fa0da0bdfc",
         "type": "github"
       },
       "original": {

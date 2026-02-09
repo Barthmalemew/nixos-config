@@ -41,24 +41,26 @@ ShellRoot {
 				screen: screenScope.screen 
 			}
 
-			// Theming & Branding (Primary Only)
+			// Background (Primary Only)
 			BackgroundClock { 
 				enabled: screenScope.isPrimary
 				screen: screenScope.screen 
 			}
 			
-			BottomPowerTag { 
-				enabled: screenScope.isPrimary
-				screen: screenScope.screen 
-			}
-			
-			// Hardware Status (Primary Only)
+			// Desktop Widgets (Primary Only)
+			// These stay behind windows but in front of BackgroundClock
 			BatteryWidget { 
 				screen: screenScope.screen 
 				enabled: system.isLaptop && screenScope.isPrimary
 			}
 			
 			MediaWidget { 
+				enabled: screenScope.isPrimary
+				screen: screenScope.screen 
+			}
+
+			// Overlay Elements
+			BottomPowerTag { 
 				enabled: screenScope.isPrimary
 				screen: screenScope.screen 
 			}

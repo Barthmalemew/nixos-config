@@ -8,10 +8,8 @@ import "theme" as Theme
 PanelWindow {
 	id: win
 
-	property var screen
 	property bool enabled: true
 	visible: enabled
-	screen: win.screen
 
 	Theme.Colors { id: colors }
 

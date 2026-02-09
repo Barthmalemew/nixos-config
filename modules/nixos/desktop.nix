@@ -29,6 +29,13 @@
       pkgs.xdg-desktop-portal-gtk
     ];
 
+    config.niri = lib.mkForce {
+      default = [ "wlr" "gtk" ];
+      "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+      "org.freedesktop.impl.portal.Screenshot" = "wlr";
+      "org.freedesktop.impl.portal.FileChooser" = "gtk";
+    };
+
     config.common = {
       default = [ "wlr" "gtk" ];
       "org.freedesktop.impl.portal.ScreenCast" = "wlr";

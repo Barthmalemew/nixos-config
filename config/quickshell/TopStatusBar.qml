@@ -227,7 +227,7 @@ Scope {
 
                             Text {
                                 visible: colors.isLaptop
-                                text: (batt && batt.present) ? (root.battPct + "%") : "…"
+                                text: root.batt ? (root.battPct + "%") : "…"
                                 color: root.battLow ? colors.color1 : colors.foreground
                                 font.pixelSize: 10 * root.scale
                                 font.weight: 850

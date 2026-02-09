@@ -1,20 +1,23 @@
 { osConfig, lib, ... }:
- 
- let
--  theme = osConfig.theme.colors;
-+  themeHelper = import ./theme-helper.nix { inherit lib osConfig; };
-+  theme = themeHelper.colors;
- 
-   # Function to turn our Nix monitor attributes into Niri KDL blocks
-@@
-   '';
- 
-   # Generate all monitor blocks for the current host
--  outputs = lib.concatStringsSep "\n" (lib.mapAttrsToList mkOutput osConfig.theme.monitors);
-+  outputs = lib.concatStringsSep "\n" (lib.mapAttrsToList mkOutput osConfig.theme.monitors);
- 
-   # Keep the hand-edited KDL as the source of truth, then inject host outputs
 
+let
+  themeHelper = import ./theme-helper.nix { inherit lib osConfig; };
+  theme = themeHelper.colors;
+
+  # Function to turn our Nix monitor attributes into Niri KDL blocks
+  mkOutput = name: opt: ''
+    output "${opt.name}" {
+        ${if opt.mode != null then "mode \"${opt.mode}\"" else ""}
+        scale ${toString opt.scale}
+        ${if opt.transform != null then "transform \"${opt.transform}\"" else ""}
+        ${if opt.position != null then "position ${opt.position}" else ""}
+    }
+  '';
+
+  # Generate all monitor blocks for the current host
+  outputs = lib.concatStringsSep "\n" (lib.mapAttrsToList mkOutput osConfig.theme.monitors);
+
+  # Keep the hand-edited KDL as the source of truth, then inject host outputs
   # and theme colors so you can tweak the config without fighting Nix strings.
   baseConfig = builtins.readFile ../../config/niri/config.kdl;
   withOutputs = builtins.replaceStrings [ "// __NIRI_OUTPUTS__" ] [ outputs ] baseConfig;
