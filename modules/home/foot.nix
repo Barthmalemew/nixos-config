@@ -1,7 +1,8 @@
-{ osConfig, ... }:
+{ osConfig, lib, ... }:
 
 let
-  palette = osConfig.theme.colors;
+  themeHelper = import ./theme-helper.nix { inherit lib osConfig; };
+  palette = themeHelper.colors;
 
   stripHash = s: builtins.replaceStrings [ "#" ] [ "" ] s;
   c = s: stripHash s;
@@ -12,7 +13,7 @@ in
     enable = true;
     settings = {
       main = {
-        font = "${osConfig.theme.font.monospace}:size=${toString osConfig.theme.font.size}";
+        font = "${themeHelper.font.monospace}:size=${toString themeHelper.font.size}";
         pad = "12x12";
       };
 
