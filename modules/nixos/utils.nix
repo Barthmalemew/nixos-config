@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  # --- Storage Maintenance ---
+  # Periodically discard unused SSD blocks.
+  services.fstrim.enable = true;
+
   # --- System Packages ---
   # Core system utilities only. User applications belong in home.nix.
   environment.systemPackages = with pkgs; [

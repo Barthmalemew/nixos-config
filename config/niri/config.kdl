@@ -29,15 +29,7 @@ layout {
         width 0
     }
     
-    center-focused-column "on-overflow"
-    preset-column-widths {
-        proportion 0.33333
-        proportion 0.5
-        proportion 0.66667
-        proportion 0.75
-        proportion 1.0
-    }
-    default-column-width { proportion 0.5; }
+
 }
 
 prefer-no-csd
@@ -168,17 +160,6 @@ window-rule {
     open-maximized false
     open-maximized-to-edges false
     open-fullscreen false
-}
-
-// --- App-Specific Column Widths ---
-window-rule {
-    match app-id="vivaldi-stable"
-    default-column-width { proportion 0.75; }
-}
-
-window-rule {
-    match app-id="obsidian"
-    default-column-width { proportion 0.66667; }
 }
 
 // --- Floating Rules & Utility Windows ---

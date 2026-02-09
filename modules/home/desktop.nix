@@ -1,7 +1,7 @@
-{ config, pkgs, ... }:
+{ osConfig, pkgs, ... }:
 
 let
-  theme = config.theme.colors;
+  theme = osConfig.theme.colors;
 in
 
 {
@@ -14,12 +14,14 @@ in
   systemd.user.services.quickshell = {
     Unit = {
       Description = "QuickShell Desktop Shell";
-      After = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" "dbus-niri-environment.service" ];
+      Wants = [ "dbus-niri-environment.service" ];
       PartOf = [ "graphical-session.target" ];
+      ConditionEnvironment = "WAYLAND_DISPLAY";
     };
     Service = {
       ExecStart = "${pkgs.quickshell}/bin/qs";
-      Restart = "always";
+      Restart = "on-failure";
       RestartSec = 2;
     };
     Install = {

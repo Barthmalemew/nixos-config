@@ -74,5 +74,6 @@ in
   # you just set 'theme.colors.background = "..."' in that host's config,
   # and it will take precedence over this default.
 
-  config.theme.colors = import ./palette.nix;
+  # Set palette as defaults so hosts can override individual keys.
+  config.theme.colors = lib.mapAttrs (_: v: lib.mkDefault v) (import ./palette.nix);
 }

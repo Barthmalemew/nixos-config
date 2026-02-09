@@ -1,7 +1,7 @@
-{ config, lib, ... }:
+{ osConfig, lib, ... }:
 
 let
-  theme = config.theme.colors;
+  theme = osConfig.theme.colors;
 
   # Function to turn our Nix monitor attributes into Niri KDL blocks
   mkOutput = name: opt: ''
@@ -14,7 +14,7 @@ let
   '';
 
   # Generate all monitor blocks for the current host
-  outputs = lib.concatStringsSep "\n" (lib.mapAttrsToList mkOutput config.theme.monitors);
+  outputs = lib.concatStringsSep "\n" (lib.mapAttrsToList mkOutput osConfig.theme.monitors);
 
   # Keep the hand-edited KDL as the source of truth, then inject host outputs
   # and theme colors so you can tweak the config without fighting Nix strings.

@@ -18,6 +18,7 @@
 
   # --- Networking ---
   networking.networkmanager.enable = true;
+  networking.firewall.enable = true;
   
   # --- Time & Localization ---
   time.timeZone = "America/New_York";

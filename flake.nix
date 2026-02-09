@@ -18,9 +18,6 @@
   outputs = { nixpkgs, home-manager, nvf, mandrid, ... }: 
   let
     system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    palette = import ./modules/palette.nix;
-    customNvf = nvf.lib.mkNeovim { theme = { colors = palette; }; };
 
     mkSystem = host: nixpkgs.lib.nixosSystem {
       modules = [
@@ -30,11 +27,10 @@
         {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit nvf mandrid customNvf; };
+            home-manager.extraSpecialArgs = { inherit nvf mandrid; };
             home-manager.users.barthmalemew = {
               imports = [
                 ./home.nix
-                ./modules/theme.nix
               ];
             };
         }

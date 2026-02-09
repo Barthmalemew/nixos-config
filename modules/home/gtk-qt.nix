@@ -1,7 +1,7 @@
-{ config, pkgs, ... }:
+{ osConfig, pkgs, ... }:
 
 let
-  theme = config.theme.colors;
+  theme = osConfig.theme.colors;
 in
 {
   # ---------------------------------------------------------------------------
@@ -46,16 +46,4 @@ in
     style.name = "adwaita-dark";
   };
 
-  # 3. System-wide Dark Mode Preference
-  # This tells Electron apps (Vivaldi, Obsidian) and GTK apps to use dark mode.
-  dconf.settings = {
-    "org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
-    };
-  };
-
-  # 4. Environment Variables for Theming
-  home.sessionVariables = {
-    GTK_THEME = "Adwaita-dark";
-  };
 }

@@ -18,8 +18,19 @@
 
   xdg.portal = {
     enable = true;
-    # Prefer KDE dialogs, but keep GTK as fallback.
-    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gtk ];
-    config.common.default = [ "kde" "gtk" ];
+
+    # Niri is wlroots-based; use the wlroots portal for screencast/screenshot
+    # (screen sharing, PipeWire). Keep KDE/GTK for file dialogs and general UI.
+    extraPortals = [
+      pkgs.xdg-desktop-portal-wlr
+      pkgs.kdePackages.xdg-desktop-portal-kde
+      pkgs.xdg-desktop-portal-gtk
+    ];
+
+    config.common = {
+      default = [ "kde" "gtk" "wlr" ];
+      "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+      "org.freedesktop.impl.portal.Screenshot" = "wlr";
+    };
   };
 }

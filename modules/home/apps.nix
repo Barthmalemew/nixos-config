@@ -11,6 +11,7 @@
     vivaldi
     quickshell
     obsidian
+    kdePackages.dolphin
     swaybg
     grim
     slurp

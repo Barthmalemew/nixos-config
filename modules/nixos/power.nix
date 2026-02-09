@@ -39,6 +39,20 @@
     };
   };
 
+  # Compressed RAM swap helps on systems with no disk swap.
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+  };
+
+  # Sensible laptop lid behavior.
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
+  };
+
   # ---------------------------------------------------------------------------
   # THE "20% PANIC" TRIGGER
   # ---------------------------------------------------------------------------
@@ -68,9 +82,11 @@
     };
   };
 
-  # Trigger the script whenever power status changes
+  # Trigger the script whenever battery state changes.
+  # udev can't do numeric comparisons reliably, so we run on change and let the
+  # oneshot script decide whether to act.
   services.udev.extraRules = ''
-    SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="[0-2][0-0]", RUN+="${pkgs.systemd}/bin/systemctl start battery-monitor.service"
+    ACTION=="change", SUBSYSTEM=="power_supply", KERNEL=="BAT*", RUN+="${pkgs.systemd}/bin/systemctl start battery-monitor.service"
   '';
 
   # Power Management tools

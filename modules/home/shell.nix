@@ -1,7 +1,8 @@
-{ config, customNvf, mandrid, pkgs, ... }:
+{ config, osConfig, nvf, mandrid, pkgs, ... }:
 
 let
   cursor = config.home.pointerCursor;
+  customNvf = nvf.lib.mkNeovim { theme = { colors = osConfig.theme.colors; }; };
 in
 
 {
