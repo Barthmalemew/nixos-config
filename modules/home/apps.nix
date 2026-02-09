@@ -11,6 +11,7 @@
     vivaldi
     quickshell
     obsidian
+    obs-studio
     kdePackages.dolphin
     swaybg
     grim

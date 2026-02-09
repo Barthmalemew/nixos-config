@@ -18,6 +18,15 @@ Scope {
     readonly property int barH: Math.round(36 * scale)
     readonly property int padX: Math.round(18 * scale)
 
+    readonly property bool showOnThisScreen: {
+        const screens = Quickshell.screens.values;
+        if (!root.screen || screens.length === 0) return false;
+        if (screens.length === 1) return true;
+        if (colors.primaryMonitor && root.screen.name === colors.primaryMonitor) return true;
+        const first = screens[0];
+        return first && (root.screen === first || root.screen.name === first.name);
+    }
+
     // Visibility is driven by NiriActivity
     property bool shouldShow: false
     property real offsetY: 0
@@ -50,10 +59,18 @@ Scope {
         }
     }
 
+    onShowOnThisScreenChanged: {
+        if (!showOnThisScreen) {
+            root.shouldShow = false;
+            root.barVisible = false;
+            root.offsetY = -barH;
+        }
+    }
+
     // --- Models ---
     NiriActivity {
         id: niri
-        active: true
+        active: root.showOnThisScreen
         onHasWindowsChanged: root.shouldShow = niri.hasWindows
         Component.onCompleted: root.shouldShow = niri.hasWindows
     }
@@ -114,7 +131,7 @@ Scope {
     }
 
     LazyLoader {
-        active: true
+        active: root.showOnThisScreen
 
         PanelWindow {
             id: win
