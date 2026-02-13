@@ -12,7 +12,6 @@
     isNormalUser = true;
     description = username;
     extraGroups = [ "networkmanager" "wheel" ];
-    shell = pkgs.zsh;
   };
 
   home-manager.users.${username} = import ../../home;

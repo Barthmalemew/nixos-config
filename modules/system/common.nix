@@ -30,9 +30,10 @@
   programs.niri.enable = true;
 
   # Display manager
-  services.greetd = {
+  services.xserver.enable = true;
+  services.displayManager.sddm = {
     enable = true;
-    settings.default_session.command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd niri-session";
+    wayland.enable = true;
   };
 
   # XDG portal

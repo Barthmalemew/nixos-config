@@ -5,7 +5,6 @@
     ./modules/git
     ./modules/opencode
     ./modules/ssh
-    ./modules/shell
     ./modules/nvf
   ];
 
