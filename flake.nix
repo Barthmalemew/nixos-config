@@ -1,46 +1,47 @@
 {
-  description = "Kevin's systems - Main System Flake";
+  description = "barthmalemew's NixOS Configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    
     home-manager = {
-    	url = "github:nix-community/home-manager";
-        inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nvf.url = "path:./nvf";
-    mandrid = {
-        url = "github:Barthmalemew/mandrid";
+    niri.url = "github:sodiboo/niri-flake";
+
+    nvf = {
+      url = "github:notashelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { nixpkgs, home-manager, nvf, mandrid, ... }: 
-  let
-    system = "x86_64-linux";
-
-    mkSystem = host: nixpkgs.lib.nixosSystem {
-      modules = [
-        ./hosts/${host}/default.nix 
-        ./modules/theme.nix
-        home-manager.nixosModules.home-manager
-        {
+  outputs = { self, nixpkgs, home-manager, niri, nvf, ... }@inputs: 
+    let
+      system = "x86_64-linux";            
+      username = "barthmalemew";          
+      
+      mkHost = host: nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs username; };
+        modules = [
+          ./hosts/${host}/default.nix
+          niri.nixosModules.niri
+          home-manager.nixosModules.home-manager
+          {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit nvf mandrid; };
-            home-manager.users.barthmalemew = {
-              imports = [
-                ./home.nix
-              ];
-            };
-        }
-      ];
+            home-manager.users.${username} = import ./home/default.nix;
+            home-manager.sharedModules = [ inputs.nvf.homeManagerModules.default ];
+          }
+        ];
+      };    
+    in
+    {
+      nixosConfigurations = {
+        ladmin = mkHost "ladmin";
+        ladmin-laptop = mkHost "ladmin-laptop";
+      };
     };
-  in
-  {
-    nixosConfigurations = {
-      ladmin = mkSystem "ladmin";
-      ladmin-laptop = mkSystem "ladmin-laptop";
-    };
-  };
 }

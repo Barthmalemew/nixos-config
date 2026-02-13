@@ -1,34 +1,33 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
-    ../../configuration.nix
+    ../../modules/system/common.nix
   ];
 
   networking.hostName = "ladmin";
 
-  nixpkgs.hostPlatform = "x86_64-linux";
-
-  theme.isLaptop = false;
-  theme.primaryMonitor = "DP-1";
-
-  # --- Power Management ---
-  # On a desktop, we want performance over power saving.
-  powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
-
-  # --- Monitor Layout ---
-  theme.monitors = {
-    "primary" = {
-      name = "DP-1";
-      mode = "2560x1440@165.000";
-      position = "x=1440 y=0";
-    };
-    "secondary" = {
-      name = "DP-2";
-      mode = "2560x1440";
-      transform = "90";
-      position = "x=0 y=-795";
-    };
+  users.users.${username} = {
+    isNormalUser = true;
+    description = username;
+    extraGroups = [ "networkmanager" "wheel" ];
+    shell = pkgs.zsh;
   };
+
+  home-manager.users.${username} = import ../../home;
+
+  # GPU drivers - UNCOMMENT YOUR GPU
+  # Intel:
+  # services.xserver.videoDrivers = [ "intel" ];
+  # hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
+  
+  # AMD:
+  # services.xserver.videoDrivers = [ "amdgpu" ];
+  
+  # NVIDIA:
+  # services.xserver.videoDrivers = [ "nvidia" ];
+  # hardware.nvidia.modesetting.enable = true;
+
+  system.stateVersion = "25.11";
 }
