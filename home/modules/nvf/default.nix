@@ -13,15 +13,20 @@
         lineNumberMode = "number";
         
         # Indentation
-        tabWidth = 2;
-        autoIndent = true;
+        options = {
+          tabstop = 2;
+          shiftwidth = 2;
+          autoindent = true;
+        };
         
         # Basic settings
-        useSystemClipboard = true;
         syntaxHighlighting = true;
+
+        clipboard.registers = [ "unnamedplus" ];
         
-        # Leader key
-        leaderKey = " ";
+        globals.mapleader = " ";
+
+        telescope.enable = true;
         
         # Theme
         theme = {

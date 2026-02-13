@@ -3,6 +3,7 @@
 {
   imports = [
     ./modules/git
+    ./modules/niri
     ./modules/opencode
     ./modules/ssh
     ./modules/nvf
@@ -19,6 +20,8 @@
     fd
     vivaldi
     yazi
+    wofi
+    foot
   ];
 
   home.sessionVariables = {

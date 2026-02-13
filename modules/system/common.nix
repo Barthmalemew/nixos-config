@@ -4,6 +4,8 @@
   # Boot
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.configurationLimit = 3;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
 
   # Networking
   networking.networkmanager.enable = true;
@@ -55,8 +57,8 @@
   # Fonts
   fonts.packages = with pkgs; [
     noto-fonts
-    noto-fonts-emoji
-    (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+    noto-fonts-color-emoji
+    pkgs."nerd-fonts".jetbrains-mono
   ];
 
   # System packages
