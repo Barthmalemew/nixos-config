@@ -16,7 +16,6 @@ let
     };
     plugin = [
       "opencode-gemini-auth@latest"
-      "./plugins/mandrid-pack.js"
     ];
   };
 in

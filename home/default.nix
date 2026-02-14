@@ -4,6 +4,7 @@
   imports = [
     ./modules/git
     ./modules/niri
+    ./modules/waybar
     ./modules/opencode
     ./modules/ssh
     ./modules/nvf

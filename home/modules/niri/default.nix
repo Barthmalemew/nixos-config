@@ -133,9 +133,7 @@
     }
 
     window-rule {
-        open-maximized false
-        open-maximized-to-edges false
-        open-fullscreen false
+      open-fullscreen false
     }
   '';
 }
