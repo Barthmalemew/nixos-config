@@ -26,7 +26,11 @@ PanelWindow {
     property real transformCornerY: open ? 0 : -24
 
     readonly property list<DesktopEntry> visibleEntries: Array.from(DesktopEntries.applications.values).sort((d1, d2) => d1.name.localeCompare(d2.name)).filter(application => application.name.toLowerCase().includes(promptInput.text.toLowerCase()))
-    property real selectedEntry: 0
+    property int selectedEntry: 0
+
+    onVisibleEntriesChanged: {
+        launcher.clampSelectedEntry();
+    }
 
     Behavior on transformY {
         DefaultNumberAnimation {}
@@ -69,7 +73,7 @@ PanelWindow {
                     SvgIcon {
                         anchors.centerIn: parent
                         source: "fa_rocket.svg"
-                        color: Colorscheme.gold
+                        color: Colorscheme.love
                     }
                 }
                 Rectangle {
@@ -93,10 +97,17 @@ PanelWindow {
                             if (event.key === Qt.Key_Return) {
                                 launcher.run();
                             } else if (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_N) {
-                                launcher.selectedEntry++;
+                                if (launcher.visibleEntries.length > 0) {
+                                    launcher.selectedEntry = (launcher.selectedEntry + 1) % launcher.visibleEntries.length;
+                                }
                             } else if (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_P) {
-                                launcher.selectedEntry--;
+                                if (launcher.visibleEntries.length > 0) {
+                                    launcher.selectedEntry = (launcher.selectedEntry - 1 + launcher.visibleEntries.length) % launcher.visibleEntries.length;
+                                }
                             }
+                        }
+                        onTextEdited: {
+                            launcher.selectedEntry = 0;
                         }
                     }
                 }
@@ -112,7 +123,15 @@ PanelWindow {
                     width: entry.width
                     height: entry.height + (2 * Size.launcherInnerPadding)
                     radius: Size.borderRadiusSmall
-                    color: isSelected ? Colorscheme.highlightMed : Colorscheme.base
+                    color: (entryMouse.containsMouse || isSelected) ? Colorscheme.surface : Colorscheme.base
+                    border.width: (entryMouse.containsMouse || isSelected) ? 1 : 0
+                    border.color: Colorscheme.love
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
 
                     MouseArea {
                         id: entryMouse
@@ -146,7 +165,7 @@ PanelWindow {
                         Text {
                             text: modelData.name
                             font.pointSize: Size.launcherFontSize
-                            color: (entryMouse.containsMouse || delegateRect.isSelected) ? Colorscheme.accentHover : Colorscheme.text
+                            color: (entryMouse.containsMouse || delegateRect.isSelected) ? Colorscheme.foam : Colorscheme.gold
                             width: parent.width - itemIcon.width - parent.spacing
                             elide: Text.ElideRight
                         }
@@ -157,8 +176,30 @@ PanelWindow {
     }
 
     function run() {
+        if (launcher.visibleEntries.length === 0) {
+            launcher.open = false;
+            return;
+        }
+
+        launcher.clampSelectedEntry();
+        const entry = launcher.visibleEntries[launcher.selectedEntry];
+        if (!entry) {
+            launcher.open = false;
+            return;
+        }
+
         launcher.open = false;
-        launcher.visibleEntries[launcher.selectedEntry].execute();
+        entry.execute();
+    }
+
+    function clampSelectedEntry() {
+        const entriesLength = launcher.visibleEntries.length;
+        if (entriesLength <= 0) {
+            launcher.selectedEntry = 0;
+            return;
+        }
+
+        launcher.selectedEntry = Math.max(0, Math.min(launcher.selectedEntry, entriesLength - 1));
     }
 
     IpcHandler {

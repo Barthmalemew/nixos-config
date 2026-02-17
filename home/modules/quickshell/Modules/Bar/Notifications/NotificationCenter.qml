@@ -49,41 +49,51 @@ PopupWindow {
             leftRightTranslateX: content.transformX
             topBottomTranslateX: content.transformTopCornerX
 
-            ColumnLayout {
+            Item {
                 id: rectContent
                 anchors.centerIn: parent
                 height: Size.notificationHeight * 3.3
                 width: Size.notificationWidth - (2 * Size.notificationPadding)
-                spacing: Size.notificationPadding
-                MediaPlayer {}
-                RowLayout {
-                    spacing: Size.iconTextPadding
-                    SvgIcon {
-                        size: 32
-                        color: Colorscheme.gold
-                        source: "fa_bell.svg"
-                    }
-                    Text {
-                        color: Colorscheme.text
-                        text: "Notifications"
-                        font.pointSize: 18
-                    }
-                }
-                Text {
-                    visible: Notifications.centerNotifications.length === 0
-                    color: Colorscheme.muted
-                    text: "No notifications"
-                    font.pointSize: 14
-                }
 
-                ListView {
-                    id: notificationList
+                Column {
+                    id: stack
+                    anchors.fill: parent
                     spacing: Size.notificationPadding
-                    clip: true
-                    Layout.fillHeight: true
-                    width: Size.notificationWidth
-                    model: Notifications.centerNotifications
-                    delegate: Notification {}
+
+                    MediaPlayer {
+                        width: parent.width
+                    }
+
+                    Row {
+                        spacing: Size.iconTextPadding
+                        SvgIcon {
+                            size: 32
+                            color: Colorscheme.love
+                            source: "fa_bell.svg"
+                        }
+                        Text {
+                            color: Colorscheme.gold
+                            text: "Notifications"
+                            font.pointSize: 18
+                        }
+                    }
+
+                    Text {
+                        visible: Notifications.centerNotifications.length === 0
+                        color: Colorscheme.rose
+                        text: "No notifications"
+                        font.pointSize: 14
+                    }
+
+                    ListView {
+                        id: notificationList
+                        spacing: Size.notificationPadding
+                        clip: true
+                        width: parent.width
+                        height: Math.max(0, parent.height - y)
+                        model: Notifications.centerNotifications
+                        delegate: Notification {}
+                    }
                 }
             }
         }

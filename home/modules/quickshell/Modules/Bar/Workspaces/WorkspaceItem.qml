@@ -5,41 +5,18 @@ import qs.Components
 import qs.Services
 
 Item {
-    required property var modelData
-    property string icon: {
-        const icons = {
-            "terminal": "fa_terminal.svg",
-            "dev": "fa_dev.svg",
-            "browser": "fa_globe.svg",
-            "chat": "fa_comment.svg",
-            "browserdev": "fa_flask_vial.svg",
-            "other": "fa_window_restore.svg",
-            "notes": "fa_note_sticky.svg"
-        };
-        const fallbackIcons = [
-            "fa_terminal.svg",
-            "fa_globe.svg",
-            "fa_comment.svg",
-            "fa_dev.svg",
-            "fa_flask_vial.svg",
-            "fa_window_restore.svg",
-            "fa_note_sticky.svg"
-        ];
-        const workspaceName = typeof modelData.name === "string" ? modelData.name : "";
-        const workspaceKey = workspaceName.length > 2 ? workspaceName.slice(0, -2) : workspaceName;
-        if (icons[workspaceKey]) {
-            return icons[workspaceKey];
+    required property int idx
+    required property bool isActive
+    required property string output
+    readonly property string iconSource: {
+        const idxKey = String(idx);
+        if (Niri.workspaceIconsByIdx && Niri.workspaceIconsByIdx[idxKey]) {
+            return Niri.workspaceIconsByIdx[idxKey];
         }
-
-        const idx = parseInt(modelData.idx, 10);
-        if (!isNaN(idx) && idx > 0) {
-            return fallbackIcons[(idx - 1) % fallbackIcons.length];
-        }
-
         return "fa_plus.svg";
     }
 
-    visible: modelData.output == barWindow.modelData.name
+    visible: output == barWindow.modelData.name
     implicitWidth: mouseArea.implicitWidth
     implicitHeight: mouseArea.implicitHeight
 
@@ -51,15 +28,15 @@ Item {
         cursorShape: Qt.PointingHandCursor
 
         onClicked: {
-            Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", modelData.idx]);
+            Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", idx]);
         }
 
         Rectangle {
             id: rectangle
             anchors.fill: parent
-            color: modelData.isActive ? Colorscheme.highlightMed : Colorscheme.surface
+            color: isActive ? Colorscheme.highlightMed : Colorscheme.surface
             implicitWidth: svg.width + 6
-            implicitHeight: modelData.isActive ? svg.width + 18 : svg.width + 6
+            implicitHeight: isActive ? svg.width + 18 : svg.width + 6
             radius: 9
 
             Behavior on implicitHeight {
@@ -79,7 +56,7 @@ Item {
                 id: svg
                 anchors.centerIn: parent
                 color: mouseArea.containsMouse ? Colorscheme.foam : Colorscheme.gold
-                source: icon
+                source: iconSource
                 width: 20
                 height: 20
                 Behavior on color {

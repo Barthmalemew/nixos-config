@@ -35,7 +35,7 @@
 
     prefer-no-csd
 
-    spawn-at-startup "qs"
+    spawn-at-startup "qs" "--no-duplicate"
 
     window-rule {
         geometry-corner-radius 16
