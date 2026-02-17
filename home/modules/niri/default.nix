@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, hostname, ... }:
 
 {
   xdg.configFile."niri/config.kdl".text = ''
@@ -11,6 +11,9 @@
                 layout "us"
             }
         }
+        mouse {
+            accel-profile "flat"
+        }
         touchpad {
             tap
             natural-scroll
@@ -18,11 +21,11 @@
     }
 
     layout {
-        gaps 8
+        gaps 6
         border {
             width 2
-            active-color "#c24f4f"
-            inactive-color "#7a7c80"
+            active-color "#57ca57"
+            inactive-color "#5a5a5a"
         }
 
         focus-ring {
@@ -32,8 +35,10 @@
 
     prefer-no-csd
 
+    spawn-at-startup "qs"
+
     window-rule {
-        geometry-corner-radius 10
+        geometry-corner-radius 16
         clip-to-geometry true
     }
 
@@ -43,7 +48,8 @@
         Mod+Shift+Q { close-window; }
 
         Mod+Return { spawn "foot"; }
-        Mod+D { spawn "wofi" "--show" "drun"; }
+        Mod+D { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+        Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
 
         Mod+Left  { focus-column-left; }
         Mod+Down  { focus-window-down; }
@@ -134,6 +140,26 @@
 
     window-rule {
       open-fullscreen false
+    }
+  '' + lib.optionalString (hostname == "ladmin") ''
+
+    output "DP-1" {
+        mode "2560x1440@165.080"
+        variable-refresh-rate
+        position x=0 y=0
+    }
+
+    output "DP-2" {
+        mode "2560x1440@59.951"
+        transform "90"
+        position x=2560 y=-715
+    }
+  '' + lib.optionalString (hostname == "ladmin-laptop") ''
+
+    output "eDP-1" {
+        mode "2800x1600"
+        scale 1.75
+        variable-refresh-rate
     }
   '';
 }

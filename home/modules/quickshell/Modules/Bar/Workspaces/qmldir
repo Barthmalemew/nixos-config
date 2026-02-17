@@ -1,0 +1,3 @@
+module qs.Modules.Bar.Workspaces
+Workspaces 1.0 Workspaces.qml
+WorkspaceItem 1.0 WorkspaceItem.qml

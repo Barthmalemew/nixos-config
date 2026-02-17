@@ -1,0 +1,3 @@
+module qs.Modules.Background
+Background 1.0 Background.qml
+BackgroundClock 1.0 BackgroundClock.qml

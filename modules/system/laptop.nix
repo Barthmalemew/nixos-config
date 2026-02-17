@@ -18,7 +18,4 @@
     touchpad.naturalScrolling = true;
     touchpad.tapping = true;
   };
-
-  # Bluetooth
-  hardware.bluetooth.enable = true;
 }

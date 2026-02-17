@@ -1,0 +1,8 @@
+module qs.Components
+Button 1.0 Button.qml
+HuggingRectangle 1.0 HuggingRectangle.qml
+HuggingRectangleBorder 1.0 HuggingRectangleBorder.qml
+HuggingRectangleCornerBorder 1.0 HuggingRectangleCornerBorder.qml
+RoundedCorner 1.0 RoundedCorner.qml
+RoundedImage 1.0 RoundedImage.qml
+SvgIcon 1.0 SvgIcon.qml

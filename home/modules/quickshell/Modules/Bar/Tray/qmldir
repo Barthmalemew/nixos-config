@@ -1,0 +1,4 @@
+module qs.Modules.Bar.Tray
+Tray 1.0 Tray.qml
+TrayButton 1.0 TrayButton.qml
+TrayItem 1.0 TrayItem.qml

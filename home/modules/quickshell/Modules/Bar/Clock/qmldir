@@ -1,0 +1,2 @@
+module qs.Modules.Bar.Clock
+Clock 1.0 Clock.qml

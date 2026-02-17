@@ -1,0 +1,4 @@
+module qs.Config
+singleton Colorscheme 1.0 Colorscheme.qml
+DefaultNumberAnimation 1.0 DefaultNumberAnimation.qml
+singleton Size 1.0 Size.qml

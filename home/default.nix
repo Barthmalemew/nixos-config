@@ -4,10 +4,10 @@
   imports = [
     ./modules/git
     ./modules/niri
-    ./modules/waybar
     ./modules/opencode
     ./modules/ssh
     ./modules/nvf
+    ./modules/quickshell
   ];
 
   home.username = username;
@@ -19,15 +19,25 @@
   home.packages = with pkgs; [
     ripgrep
     fd
-    firefox
     vivaldi
     yazi
-    wofi
     foot
     kdePackages.dolphin
+    grim
+    slurp
+    quickshell
   ];
+
+  home.pointerCursor = {
+    name = "Adwaita";
+    package = pkgs.adwaita-icon-theme;
+    size = 16;
+    gtk.enable = true;
+  };
 
   home.sessionVariables = {
     EDITOR = "vim";
+    XCURSOR_SIZE = "16";
+    XCURSOR_THEME = "Adwaita";
   };
 }

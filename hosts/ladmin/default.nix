@@ -14,17 +14,18 @@
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
-  # GPU drivers - UNCOMMENT YOUR GPU
-  # Intel:
-  # services.xserver.videoDrivers = [ "intel" ];
-  # hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
-  
-  # AMD:
-  # services.xserver.videoDrivers = [ "amdgpu" ];
-  
-  # NVIDIA:
-  # services.xserver.videoDrivers = [ "nvidia" ];
-  # hardware.nvidia.modesetting.enable = true;
+  # OpenRGB
+  services.hardware.openrgb = {
+    enable = true;
+    motherboard = "amd";
+  };
+
+  # AMD RX 7800 XT
+  services.xserver.videoDrivers = [ "amdgpu" ];
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
 
   system.stateVersion = "25.11";
 }

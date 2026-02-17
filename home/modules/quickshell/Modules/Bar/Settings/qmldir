@@ -1,0 +1,14 @@
+module qs.Modules.Bar.Settings
+BatteryBox 1.0 BatteryBox.qml
+BluetoothBox 1.0 BluetoothBox.qml
+BluetoothStatus 1.0 BluetoothStatus.qml
+BrightnessSlider 1.0 BrightnessSlider.qml
+MicrophoneSlider 1.0 MicrophoneSlider.qml
+MicrophoneStatus 1.0 MicrophoneStatus.qml
+NetworkBox 1.0 NetworkBox.qml
+NetworkStatus 1.0 NetworkStatus.qml
+Settings 1.0 Settings.qml
+SettingsPopup 1.0 SettingsPopup.qml
+SettingsSlider 1.0 SettingsSlider.qml
+SpeakerSlider 1.0 SpeakerSlider.qml
+VolumeStatus 1.0 VolumeStatus.qml

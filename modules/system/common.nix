@@ -9,6 +9,7 @@
 
   # Networking
   networking.networkmanager.enable = true;
+  hardware.bluetooth.enable = true;
 
   # Localization - CHANGE YOUR TIMEZONE
   time.timeZone = "America/New_York";
@@ -41,8 +42,8 @@
   # XDG portal
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
-    config.common.default = "gnome";
+    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+    config.common.default = "kde";
   };
 
   # Audio

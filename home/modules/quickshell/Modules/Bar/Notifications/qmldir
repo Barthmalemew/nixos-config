@@ -1,0 +1,4 @@
+module qs.Modules.Bar.Notifications
+MediaPlayer 1.0 MediaPlayer.qml
+NotificationCenter 1.0 NotificationCenter.qml
+PlayerButton 1.0 PlayerButton.qml

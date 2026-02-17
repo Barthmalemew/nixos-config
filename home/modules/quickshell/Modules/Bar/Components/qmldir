@@ -1,0 +1,5 @@
+module qs.Modules.Bar.Components
+BarButton 1.0 BarButton.qml
+LauncherButton 1.0 LauncherButton.qml
+NotificationsButton 1.0 NotificationsButton.qml
+PowerButton 1.0 PowerButton.qml

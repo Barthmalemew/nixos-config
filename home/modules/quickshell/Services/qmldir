@@ -1,0 +1,6 @@
+module qs.Services
+singleton Niri 1.0 Niri.qml
+singleton Time 1.0 Time.qml
+singleton Network 1.0 Network.qml
+singleton Notifications 1.0 Notifications.qml
+singleton Volume 1.0 Volume.qml
