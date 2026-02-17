@@ -19,10 +19,12 @@
   home.packages = with pkgs; [
     ripgrep
     fd
+    firefox
     vivaldi
     yazi
     wofi
     foot
+    kdePackages.dolphin
   ];
 
   home.sessionVariables = {

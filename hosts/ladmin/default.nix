@@ -14,8 +14,6 @@
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
-  home-manager.users.${username} = import ../../home;
-
   # GPU drivers - UNCOMMENT YOUR GPU
   # Intel:
   # services.xserver.videoDrivers = [ "intel" ];

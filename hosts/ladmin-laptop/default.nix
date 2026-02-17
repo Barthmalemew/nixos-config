@@ -15,8 +15,6 @@
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
-  home-manager.users.${username} = import ../../home;
-
   # Intel Arc integrated graphics
   services.xserver.videoDrivers = [ "intel" ];
   hardware.graphics.extraPackages = with pkgs; [ 
