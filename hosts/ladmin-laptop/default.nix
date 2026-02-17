@@ -15,8 +15,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
-  # Intel Arc integrated graphics
-  services.xserver.videoDrivers = [ "intel" ];
+  # Intel integrated graphics (modesetting driver used by default under Wayland)
   hardware.graphics.extraPackages = with pkgs; [ 
     intel-media-driver  # For newer Intel GPUs (Arc)
     intel-vaapi-driver  # Hardware video acceleration
