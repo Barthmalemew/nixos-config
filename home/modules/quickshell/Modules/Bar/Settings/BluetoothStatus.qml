@@ -9,11 +9,17 @@ Item {
     implicitHeight: svgIcon.height
     readonly property var adapter: Bluetooth.defaultAdapter
     property bool enabled: adapter ? adapter.enabled : false
+    property color iconColor: Colorscheme.gold
 
     SvgIcon {
         id: svgIcon
-        color: root.enabled ? Colorscheme.text : Colorscheme.muted
+        color: root.iconColor
         source: "fa_bluetooth_b.svg"
-        size: 24
+        size: Size.settingsBoxIconSize
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+            }
+        }
     }
 }

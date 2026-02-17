@@ -1,13 +1,14 @@
 import Quickshell.Services.SystemTray
 import QtQuick
 import QtQuick.Layouts
+import qs.Config
 
 Item {
     id: root
     property bool open: false
 
     Layout.alignment: Qt.AlignHCenter
-    implicitWidth: Math.max(openButton.implicitWidth, trayItems.implicitWidth)
+    implicitWidth: Size.barWidgetWidth
     implicitHeight: openButton.height + trayItems.height
 
     TrayButton {

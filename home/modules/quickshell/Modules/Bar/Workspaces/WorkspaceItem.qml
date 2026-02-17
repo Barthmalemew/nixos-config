@@ -78,7 +78,7 @@ Item {
             SvgIcon {
                 id: svg
                 anchors.centerIn: parent
-                color: modelData.isActive ? Colorscheme.iris : mouseArea.containsMouse ? Colorscheme.foam : Colorscheme.text
+                color: mouseArea.containsMouse ? Colorscheme.foam : Colorscheme.gold
                 source: icon
                 width: 20
                 height: 20

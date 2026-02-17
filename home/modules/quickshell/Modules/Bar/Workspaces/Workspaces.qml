@@ -4,8 +4,8 @@ import qs.Services
 import qs.Config
 
 Rectangle {
-    implicitWidth: content.width + 8
-    implicitHeight: content.height + 8
+    implicitWidth: content.width + 6
+    implicitHeight: content.height + 6
     radius: Size.borderRadiusSmall
     color: Colorscheme.overlay
     border.width: 1

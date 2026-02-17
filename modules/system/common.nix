@@ -10,6 +10,7 @@
   # Networking
   networking.networkmanager.enable = true;
   hardware.bluetooth.enable = true;
+  services.upower.enable = true;
 
   # Localization - CHANGE YOUR TIMEZONE
   time.timeZone = "America/New_York";

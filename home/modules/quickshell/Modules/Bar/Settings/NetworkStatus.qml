@@ -7,12 +7,13 @@ Item {
     id: root
     implicitWidth: svgIcon.width
     implicitHeight: svgIcon.height
+    property color iconColor: Colorscheme.gold
 
     SvgIcon {
         id: svgIcon
-        color: Network.connected ? Colorscheme.text : Colorscheme.muted
+        color: root.iconColor
         source: Network.activeConnectionIcon
-        size: 24
+        size: Size.settingsBoxIconSize
         Behavior on color {
             ColorAnimation {
                 duration: 200

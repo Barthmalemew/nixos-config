@@ -51,6 +51,18 @@
         Mod+D { spawn "qs" "ipc" "call" "launcher" "toggle"; }
         Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
 
+        XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "-l" "1.5" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+        XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+        XF86AudioMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+        XF86AudioMicMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+        XF86AudioPlay { spawn "playerctl" "play-pause"; }
+        XF86AudioPause { spawn "playerctl" "pause"; }
+        XF86AudioNext { spawn "playerctl" "next"; }
+        XF86AudioPrev { spawn "playerctl" "previous"; }
+        XF86AudioStop { spawn "playerctl" "stop"; }
+        XF86MonBrightnessUp { spawn "brightnessctl" "set" "+5%"; }
+        XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+
         Mod+Left  { focus-column-left; }
         Mod+Down  { focus-window-down; }
         Mod+Up    { focus-window-up; }

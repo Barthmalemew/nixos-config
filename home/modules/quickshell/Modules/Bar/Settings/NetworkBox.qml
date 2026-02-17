@@ -40,6 +40,8 @@ MouseArea {
                 font.bold: true
                 text: Network.activeConnection
                 color: root.foreground
+                width: Math.max(0, root.width - (Size.settingsBoxIconSize + (Size.settingsBoxSpacing * 3)))
+                elide: Text.ElideRight
             }
         }
     }

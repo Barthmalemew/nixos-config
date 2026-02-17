@@ -3,7 +3,7 @@ import qs.Config
 import qs.Modules.Bar.Components
 
 BarButton {
-    color: Colorscheme.gold
+    color: Colorscheme.love
     colorHover: Colorscheme.foam
     icon: "fa_power_off.svg"
     onClicked: {

@@ -17,6 +17,7 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
+    brightnessctl
     ripgrep
     fd
     vivaldi
@@ -25,6 +26,7 @@
     kdePackages.dolphin
     grim
     slurp
+    playerctl
     quickshell
   ];
 

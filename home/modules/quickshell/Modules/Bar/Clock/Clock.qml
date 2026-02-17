@@ -8,7 +8,7 @@ import qs.Services
 Rectangle {
     id: rectangle
     color: Colorscheme.overlay
-    implicitWidth: content.width
+    implicitWidth: Size.barWidgetWidth
     implicitHeight: content.height
     radius: Size.borderRadiusSmall
     border.width: 1
@@ -28,13 +28,13 @@ Rectangle {
                 font.pixelSize: 14
                 font.bold: true
                 text: Time.day
-                color: Colorscheme.love
+                color: Colorscheme.gold
             }
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 font.pixelSize: 10
                 text: Time.month
-                color: Colorscheme.love
+                color: Colorscheme.gold
             }
         }
 
@@ -51,13 +51,13 @@ Rectangle {
                 font.pixelSize: 12
                 font.bold: true
                 text: Time.hours
-                color: Colorscheme.love
+                color: Colorscheme.gold
             }
             Text {
                 font.pixelSize: 12
                 font.bold: true
                 text: Time.minutes
-                color: Colorscheme.love
+                color: Colorscheme.gold
             }
         }
     }

@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Services.UPower
 import Quickshell.Widgets
 import Quickshell.Wayland
 import QtQuick
@@ -20,7 +21,7 @@ Variants {
         required property var modelData
         screen: modelData
         readonly property bool displayOne: !!(modelData && modelData.name && modelData.name.endsWith("-1"))
-        readonly property bool isLaptopOutput: !!(modelData && modelData.name && modelData.name.startsWith("eDP"))
+        readonly property bool isLaptopHost: !!(UPower.displayDevice && UPower.displayDevice.isLaptopBattery)
         visible: displayOne
 
         anchors {
@@ -36,7 +37,7 @@ Variants {
             item: barContent
         }
         implicitWidth: barContent.width
-        property real contentWidth: 48
+        property real contentWidth: Size.barWidth
 
         HuggingRectangle {
             id: barContent
@@ -55,11 +56,11 @@ Variants {
 
             ColumnLayout {
                 anchors {
-                    topMargin: 8
+                    topMargin: Size.barSectionMargin
                     top: parent.top
                     horizontalCenter: parent.horizontalCenter
                 }
-                spacing: 8
+                spacing: Size.barSectionSpacing
 
                 LauncherButton {}
                 Workspaces {}
@@ -70,7 +71,7 @@ Variants {
                     verticalCenter: parent.verticalCenter
                     horizontalCenter: parent.horizontalCenter
                 }
-                spacing: 8
+                spacing: Size.barSectionSpacing
 
                 Clock {}
                 NotificationsButton {
@@ -80,16 +81,16 @@ Variants {
 
             ColumnLayout {
                 anchors {
-                    bottomMargin: 8
+                    bottomMargin: Size.barSectionMargin
                     bottom: parent.bottom
                     horizontalCenter: parent.horizontalCenter
                 }
-                spacing: 8
+                spacing: Size.barSectionSpacing
 
                 Tray {}
                 Settings {
                     popup: controlsPopup
-                    isLaptop: barWindow.isLaptopOutput
+                    isLaptop: barWindow.isLaptopHost
                 }
                 PowerButton {}
             }
@@ -99,7 +100,7 @@ Variants {
             id: controlsPopup
             window: barWindow
             bar: barContent
-            isLaptop: barWindow.isLaptopOutput
+            isLaptop: barWindow.isLaptopHost
         }
 
         NotificationCenter {

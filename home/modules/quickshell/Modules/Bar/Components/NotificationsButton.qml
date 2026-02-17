@@ -3,7 +3,7 @@ import qs.Modules.Bar.Components
 
 BarButton {
     property var popup
-    color: Colorscheme.rose
+    color: Colorscheme.love
     colorHover: Colorscheme.foam
     icon: "fa_bell.svg"
     onClicked: {

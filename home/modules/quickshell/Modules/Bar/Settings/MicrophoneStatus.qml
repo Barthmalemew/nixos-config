@@ -7,12 +7,13 @@ Item {
     id: root
     implicitWidth: svgIcon.width
     implicitHeight: svgIcon.height
+    property color iconColor: Colorscheme.gold
 
     SvgIcon {
         id: svgIcon
-        color: Volume.sourceMuted ? Colorscheme.muted : Colorscheme.text
+        color: root.iconColor
         source: Volume.sourceIcon
-        size: 24
+        size: Size.settingsBoxIconSize
         Behavior on color {
             ColorAnimation {
                 duration: 200

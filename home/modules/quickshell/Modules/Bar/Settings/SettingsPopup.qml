@@ -11,8 +11,24 @@ PopupWindow {
     property var window
     property var bar
     property bool isLaptop: false
-
     property bool open: false
+    readonly property int columns: 2
+    readonly property int rows: isLaptop ? 3 : 2
+    readonly property real availableHeight: {
+        if (!window || !window.height) {
+            return 900;
+        }
+        return Math.max(0, window.height - (Size.settingsPopupMargin * 2));
+    }
+    readonly property real availableWidth: {
+        const screen = window ? window.screen : null;
+        const screenWidth = screen && screen.width ? screen.width : 1920;
+        const barWidth = bar && bar.contentWidth ? bar.contentWidth : 48;
+        const reservedRight = 28;
+        return Math.max(0, screenWidth - barWidth - (Size.settingsPopupMargin * 2) - reservedRight);
+    }
+    readonly property real tileWidth: Math.max(140, Math.min(Size.settingsBoxWidth, (availableWidth - Size.settingsPopupSpacing) / columns))
+    readonly property real tileHeight: Math.max(42, Math.min(Size.settingsBoxHeight, (availableHeight - (Size.settingsPopupSpacing * (rows - 1))) / rows))
 
     color: "transparent"
     visible: content.transformX != -rect.width
@@ -46,33 +62,49 @@ PopupWindow {
             leftEdge: true
             bottomEdge: true
 
-            contentWidth: grid.width
-            contentHeight: grid.height
+            contentWidth: (settingsPopup.columns * settingsPopup.tileWidth) + ((settingsPopup.columns - 1) * Size.settingsPopupSpacing)
+            contentHeight: (settingsPopup.rows * settingsPopup.tileHeight) + ((settingsPopup.rows - 1) * Size.settingsPopupSpacing)
 
             rectTranslateX: content.transformX
             leftRightTranslateX: content.transformX
             topBottomTranslateX: content.transformTopCornerX
 
             MarginWrapperManager {
-                margin: 30
+                margin: Size.settingsPopupMargin
             }
 
             Grid {
                 id: grid
-                columns: 2
-                spacing: 24
+                columns: settingsPopup.columns
+                spacing: Size.settingsPopupSpacing
+                width: (settingsPopup.columns * settingsPopup.tileWidth) + ((settingsPopup.columns - 1) * Size.settingsPopupSpacing)
+                height: (settingsPopup.rows * settingsPopup.tileHeight) + ((settingsPopup.rows - 1) * Size.settingsPopupSpacing)
 
-                BluetoothBox {}
-                NetworkBox {}
-                SpeakerSlider {}
-                MicrophoneSlider {}
-                Loader {
-                    active: settingsPopup.isLaptop
-                    source: active ? Qt.resolvedUrl("BatteryBox.qml") : ""
+                BluetoothBox {
+                    width: settingsPopup.tileWidth
+                    height: settingsPopup.tileHeight
                 }
-                Loader {
-                    active: settingsPopup.isLaptop
-                    source: active ? Qt.resolvedUrl("BrightnessSlider.qml") : ""
+                NetworkBox {
+                    width: settingsPopup.tileWidth
+                    height: settingsPopup.tileHeight
+                }
+                SpeakerSlider {
+                    width: settingsPopup.tileWidth
+                    height: settingsPopup.tileHeight
+                }
+                MicrophoneSlider {
+                    width: settingsPopup.tileWidth
+                    height: settingsPopup.tileHeight
+                }
+                BatteryBox {
+                    visible: settingsPopup.isLaptop
+                    width: settingsPopup.tileWidth
+                    height: settingsPopup.tileHeight
+                }
+                BrightnessSlider {
+                    visible: settingsPopup.isLaptop
+                    width: settingsPopup.tileWidth
+                    height: settingsPopup.tileHeight
                 }
             }
         }
