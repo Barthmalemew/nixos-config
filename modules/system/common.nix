@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 {
   # Boot
@@ -70,6 +70,10 @@
     curl
     wl-clipboard
   ];
+
+  # ZSH — must be enabled at system level for it to appear in /etc/shells
+  programs.zsh.enable = true;
+  users.users.${username}.shell = pkgs.zsh;
 
   # SSH
   services.openssh.enable = true;

@@ -1,7 +1,8 @@
-{ colorscheme, lib, ... }:
+{ colorscheme, lib, pkgs, ... }:
 
 let
   c = colorscheme;
+  inherit (lib.generators) mkLuaInline;
 in
 {
   programs.nvf = {
@@ -25,6 +26,128 @@ in
         globals.mapleader = " ";
         telescope.enable = true;
 
+        autocomplete = {
+          blink-cmp.enable = false;
+
+          nvim-cmp = {
+            enable = true;
+            mappings = {
+              complete = "<C-Space>";
+              confirm = "<CR>";
+              next = "<Tab>";
+              previous = "<S-Tab>";
+              close = "<C-e>";
+              scrollDocsUp = "<C-d>";
+              scrollDocsDown = "<C-f>";
+            };
+          };
+        };
+
+        snippets.luasnip.enable = true;
+        autopairs.nvim-autopairs.enable = true;
+
+        formatter.conform-nvim = {
+          enable = true;
+          setupOpts = {
+            format_on_save = null;
+
+            formatters = {
+              alejandra.command = "${pkgs.alejandra}/bin/alejandra";
+              biome.command = "${pkgs.biome}/bin/biome";
+              ruff_format.command = "${pkgs.ruff}/bin/ruff";
+              gofumpt.command = "${pkgs.gofumpt}/bin/gofumpt";
+              stylua.command = "${pkgs.stylua}/bin/stylua";
+              rustfmt.command = "${pkgs.rustfmt}/bin/rustfmt";
+              "clang-format".command = "${pkgs.clang-tools}/bin/clang-format";
+              "google-java-format".command = "${pkgs.google-java-format}/bin/google-java-format";
+              csharpier.command = "${pkgs.csharpier}/bin/csharpier";
+            };
+
+            formatters_by_ft = {
+              nix = [ "alejandra" ];
+
+              javascript = [ "biome" ];
+              javascriptreact = [ "biome" ];
+              typescript = [ "biome" ];
+              typescriptreact = [ "biome" ];
+              html = [ "biome" ];
+              css = [ "biome" ];
+              scss = [ "biome" ];
+              less = [ "biome" ];
+
+              python = [ "ruff_format" ];
+              go = [ "gofumpt" ];
+              lua = [ "stylua" ];
+              rust = [ "rustfmt" ];
+
+              c = [ "clang-format" ];
+              cpp = [ "clang-format" ];
+              java = [ "google-java-format" ];
+              cs = [ "csharpier" ];
+            };
+          };
+        };
+
+        augroups = [
+          {
+            name = "nvf_nvim_lint_open";
+          }
+        ];
+
+        autocmds = [
+          {
+            event = [ "BufReadPost" ];
+            group = "nvf_nvim_lint_open";
+            desc = "Run lint on file open";
+            callback = mkLuaInline ''
+              function(args)
+                if type(nvf_lint) == "function" then
+                  nvf_lint(args.buf)
+                end
+              end
+            '';
+          }
+        ];
+
+        keymaps = [
+          {
+            key = "<leader>f";
+            mode = "n";
+            desc = "Format current buffer";
+            lua = true;
+            action = ''
+              function()
+                local ok, conform = pcall(require, "conform")
+                if ok then
+                  conform.format({ async = false, lsp_format = "fallback" })
+                  return
+                end
+
+                vim.lsp.buf.format({ async = false })
+              end
+            '';
+          }
+          {
+            key = "<leader>l";
+            mode = "n";
+            desc = "Lint current buffer";
+            lua = true;
+            action = ''
+              function()
+                if type(nvf_lint) == "function" then
+                  nvf_lint(vim.api.nvim_get_current_buf())
+                  return
+                end
+
+                local ok, lint = pcall(require, "lint")
+                if ok then
+                  lint.try_lint()
+                end
+              end
+            '';
+          }
+        ];
+
         lsp = {
           enable = true;
           formatOnSave = false;
@@ -45,6 +168,51 @@ in
           };
 
           servers = {
+            rust_analyzer = {
+              cmd = [ "${pkgs.rust-analyzer}/bin/rust-analyzer" ];
+              root_dir = lib.mkForce (mkLuaInline ''
+                function(bufnr, on_dir)
+                  if vim.fn.executable("cargo") ~= 1 then
+                    _G.nvf_missing_lsp_runtime_warnings = _G.nvf_missing_lsp_runtime_warnings or {}
+                    if not _G.nvf_missing_lsp_runtime_warnings.rust_analyzer then
+                      _G.nvf_missing_lsp_runtime_warnings.rust_analyzer = true
+                      vim.notify(
+                        "rust-analyzer skipped: 'cargo' executable not found in this environment.",
+                        vim.log.levels.WARN
+                      )
+                    end
+                    on_dir(nil)
+                    return
+                  end
+
+                  local fname = vim.api.nvim_buf_get_name(bufnr)
+                  on_dir(vim.fs.root(fname, "Cargo.toml") or vim.fs.root(fname, "rust-project.json"))
+                end
+              '');
+            };
+
+            gopls = {
+              root_dir = lib.mkForce (mkLuaInline ''
+                function(bufnr, on_dir)
+                  if vim.fn.executable("go") ~= 1 then
+                    _G.nvf_missing_lsp_runtime_warnings = _G.nvf_missing_lsp_runtime_warnings or {}
+                    if not _G.nvf_missing_lsp_runtime_warnings.gopls then
+                      _G.nvf_missing_lsp_runtime_warnings.gopls = true
+                      vim.notify(
+                        "gopls skipped: 'go' executable not found in this environment.",
+                        vim.log.levels.WARN
+                      )
+                    end
+                    on_dir(nil)
+                    return
+                  end
+
+                  local fname = vim.api.nvim_buf_get_name(bufnr)
+                  on_dir(vim.fs.root(fname, "go.work") or vim.fs.root(fname, "go.mod") or vim.fs.root(fname, ".git"))
+                end
+              '');
+            };
+
             jdtls.enable = lib.mkForce false;
             csharp_ls.enable = lib.mkForce false;
           };
@@ -52,6 +220,129 @@ in
 
         diagnostics = {
           enable = true;
+
+          nvim-lint = {
+            enable = true;
+            lint_after_save = true;
+
+            linters_by_ft = {
+              nix = [ "statix" "deadnix" ];
+              lua = [ "luacheck" ];
+
+              javascript = [ "biomejs" ];
+              javascriptreact = [ "biomejs" ];
+              typescript = [ "biomejs" ];
+              typescriptreact = [ "biomejs" ];
+              html = [ "biomejs" ];
+              css = [ "biomejs" ];
+              scss = [ "biomejs" ];
+              less = [ "biomejs" ];
+
+              python = [ "ruff" ];
+              rust = [ "clippy" ];
+              go = [ "golangcilint" ];
+              c = [ "cppcheck" ];
+              cpp = [ "cppcheck" ];
+              java = [ "checkstyle" ];
+            };
+
+            linters.checkstyle.args = [ "-f" "sarif" "-c" "/google_checks.xml" ];
+            linters.statix.cmd = "${pkgs.statix}/bin/statix";
+            linters.deadnix.cmd = "${pkgs.deadnix}/bin/deadnix";
+            linters.luacheck.cmd = "${pkgs.luajitPackages.luacheck}/bin/luacheck";
+            linters.biomejs.cmd = "${pkgs.biome}/bin/biome";
+            linters.ruff.cmd = "${pkgs.ruff}/bin/ruff";
+            linters.clippy.cmd = "${pkgs.cargo}/bin/cargo";
+            linters.clippy.ignore_exitcode = true;
+            linters.golangcilint.cmd = "${pkgs.golangci-lint}/bin/golangci-lint";
+            linters.cppcheck.cmd = "${pkgs.cppcheck}/bin/cppcheck";
+            linters.checkstyle.cmd = "${pkgs.checkstyle}/bin/checkstyle";
+
+            lint_function = mkLuaInline ''
+              function(buf)
+                local lint = require("lint")
+                local ft = vim.api.nvim_get_option_value("filetype", { buf = buf })
+                local linters = lint.linters
+                local linters_from_ft = lint.linters_by_ft[ft]
+
+                if linters_from_ft == nil then
+                  return
+                end
+
+                if type(linters_from_ft) == "string" then
+                  linters_from_ft = { linters_from_ft }
+                end
+
+                _G.nvf_missing_linter_warnings = _G.nvf_missing_linter_warnings or {}
+
+                local function warn_missing_once(name, cmd)
+                  if _G.nvf_missing_linter_warnings[name] then
+                    return
+                  end
+                  _G.nvf_missing_linter_warnings[name] = true
+                  vim.notify(
+                    string.format("Skipping linter '%s': executable '%s' not found.", name, cmd),
+                    vim.log.levels.WARN
+                  )
+                end
+
+                local function resolve_cmd(linter)
+                  local cmd = linter.cmd
+
+                  if type(cmd) == "function" then
+                    local ok, resolved = pcall(cmd)
+                    if not ok then
+                      return nil
+                    end
+                    cmd = resolved
+                  end
+
+                  if type(cmd) == "table" then
+                    return cmd[1]
+                  end
+
+                  if type(cmd) == "string" then
+                    return cmd
+                  end
+
+                  return nil
+                end
+
+                for _, name in ipairs(linters_from_ft) do
+                  local linter = linters[name]
+                  assert(linter, "Linter with name `" .. name .. "` not available")
+
+                  if type(linter) == "function" then
+                    linter = linter()
+                  end
+
+                  linter.name = linter.name or name
+
+                  local skip_linter = false
+                  if name == "clippy" then
+                    local fname = vim.api.nvim_buf_get_name(buf)
+                    local cargo_root = vim.fs.root(fname, "Cargo.toml")
+                    if not cargo_root then
+                      warn_missing_once(name, "Cargo.toml (project root)")
+                      skip_linter = true
+                    else
+                      linter.cwd = cargo_root
+                    end
+                  end
+
+                  if not skip_linter then
+                    local cmd = resolve_cmd(linter)
+                    if cmd and vim.fn.executable(cmd) ~= 1 then
+                      warn_missing_once(name, cmd)
+                    else
+                      lint.lint(linter)
+                    end
+                  end
+                end
+              end
+            '';
+          };
+
           config = {
             virtual_text = false;
             virtual_lines = false;
@@ -81,7 +372,10 @@ in
             enable = true;
             lsp.servers = [ "pyright" ];
           };
-          rust.enable = true;
+          rust = {
+            enable = true;
+            lsp.enable = false;
+          };
           go.enable = true;
           clang.enable = true;
           assembly.enable = true;
@@ -195,9 +489,9 @@ in
           hi("Folded",        { fg = "${c.subtle}", bg = "${c.highlightLow}" })
           hi("FoldColumn",    { fg = "${c.muted}" })
           hi("SignColumn",    { fg = "${c.muted}" })
-          hi("DiffAdd",       { bg = "#1a2e1a" })
-          hi("DiffChange",    { bg = "#2a2218" })
-          hi("DiffDelete",    { fg = "${c.red}", bg = "#2a1418" })
+          hi("DiffAdd",       { fg = "${c.greenDim}", bg = "${c.highlightLow}" })
+          hi("DiffChange",    { fg = "${c.orange}", bg = "${c.highlightLow}" })
+          hi("DiffDelete",    { fg = "${c.red}", bg = "${c.highlightLow}" })
           hi("DiffText",      { bg = "${c.highlightMed}" })
 
           -- Misc UI
