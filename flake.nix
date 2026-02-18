@@ -22,6 +22,8 @@
       system = "x86_64-linux";            
       username = "barthmalemew";          
       
+      colorscheme = import ./colorscheme.nix;
+
       mkHost = host: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs username; };
@@ -32,7 +34,7 @@
           {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { inherit username; hostname = host; };
+          home-manager.extraSpecialArgs = { inherit username colorscheme; hostname = host; };
           home-manager.users.${username} = import ./home/default.nix;
           home-manager.sharedModules = [ inputs.nvf.homeManagerModules.default ];
         }

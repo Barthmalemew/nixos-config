@@ -1,4 +1,4 @@
-{ lib, hostname, ... }:
+{ lib, hostname, colorscheme, ... }:
 
 {
   xdg.configFile."niri/config.kdl".text = ''
@@ -24,8 +24,8 @@
         gaps 6
         border {
             width 2
-            active-color "#57ca57"
-            inactive-color "#5a5a5a"
+            active-color "${colorscheme.green}"
+            inactive-color "${colorscheme.muted}"
         }
 
         focus-ring {

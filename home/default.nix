@@ -8,6 +8,7 @@
     ./modules/ssh
     ./modules/nvf
     ./modules/quickshell
+    ./modules/terminal
   ];
 
   home.username = username;
@@ -22,7 +23,6 @@
     fd
     vivaldi
     yazi
-    foot
     kdePackages.dolphin
     grim
     slurp
