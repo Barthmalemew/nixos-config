@@ -1,4 +1,4 @@
-{ colorscheme, ... }:
+{ colorscheme, lib, ... }:
 
 let
   c = colorscheme;
@@ -25,8 +25,121 @@ in
         globals.mapleader = " ";
         telescope.enable = true;
 
+        lsp = {
+          enable = true;
+          formatOnSave = false;
+          inlayHints.enable = false;
+
+          mappings = {
+            goToDefinition = "gd";
+            goToDeclaration = "gD";
+            goToType = "<leader>D";
+            listImplementations = "gI";
+            listReferences = "gr";
+            hover = "K";
+            renameSymbol = "<leader>rn";
+            codeAction = "<leader>ca";
+            previousDiagnostic = "[d";
+            nextDiagnostic = "]d";
+            openDiagnosticFloat = "<leader>e";
+          };
+
+          servers = {
+            jdtls.enable = lib.mkForce false;
+            csharp_ls.enable = lib.mkForce false;
+          };
+        };
+
+        diagnostics = {
+          enable = true;
+          config = {
+            virtual_text = false;
+            virtual_lines = false;
+            signs = true;
+            underline = true;
+            update_in_insert = false;
+            float = {
+              border = "rounded";
+              source = "if_many";
+            };
+          };
+        };
+
+        languages = {
+          enableTreesitter = true;
+          enableFormat = false;
+          enableExtraDiagnostics = false;
+
+          nix = {
+            enable = true;
+            lsp.servers = [ "nixd" ];
+          };
+
+          lua.enable = true;
+          ts.enable = true;
+          python = {
+            enable = true;
+            lsp.servers = [ "pyright" ];
+          };
+          rust.enable = true;
+          go.enable = true;
+          clang.enable = true;
+          assembly.enable = true;
+          html.enable = true;
+          css.enable = true;
+          java.enable = true;
+          csharp.enable = true;
+        };
+
         # Disable built-in theme — custom palette from colorscheme.nix
         theme.enable = false;
+
+        luaConfigRC.lspRuntimeGuards = ''
+          local nvf_runtime_warnings = {}
+
+          local function warn_once(key, message)
+            if nvf_runtime_warnings[key] then
+              return
+            end
+            nvf_runtime_warnings[key] = true
+            vim.notify(message, vim.log.levels.WARN)
+          end
+
+          local function start_named_server(server)
+            local config = vim.lsp.config[server]
+            if not config then
+              vim.notify(string.format("LSP server '%s' is not configured.", server), vim.log.levels.ERROR)
+              return
+            end
+
+            vim.lsp.enable(server)
+            vim.lsp.start(config, { bufnr = vim.api.nvim_get_current_buf() })
+          end
+
+          vim.api.nvim_create_user_command("LspStartJava", function()
+            if vim.fn.executable("java") ~= 1 then
+              warn_once(
+                "java-runtime-missing",
+                "jdtls skipped: no Java runtime found in this environment. Enter the project's dev shell, then run :LspStartJava again."
+              )
+              return
+            end
+
+            start_named_server("jdtls")
+          end, { desc = "Start Java LSP (jdtls)" })
+
+          vim.api.nvim_create_user_command("LspStartCSharp", function()
+            if vim.fn.executable("dotnet") ~= 1 then
+              warn_once(
+                "dotnet-runtime-missing",
+                "csharp_ls skipped: no dotnet runtime found in this environment. Enter the project's dev shell, then run :LspStartCSharp again."
+              )
+              return
+            end
+
+            start_named_server("csharp_ls")
+          end, { desc = "Start C# LSP (csharp_ls)" })
+        '';
 
         luaConfigRC.customTheme = ''
           vim.o.termguicolors = true
