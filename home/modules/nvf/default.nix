@@ -26,6 +26,69 @@ in
         globals.mapleader = " ";
         telescope.enable = true;
 
+        visuals.nvim-web-devicons.enable = true;
+
+        binds.whichKey = {
+          enable = true;
+          setupOpts.preset = "modern";
+        };
+
+        statusline.lualine = {
+          enable = true;
+          setupOpts = {
+            options = {
+              theme = mkLuaInline ''
+                {
+                  normal   = { a = { fg = "${c.base}",  bg = "${c.orange}", gui = "bold" }, b = { fg = "${c.text}",  bg = "${c.surface}" }, c = { fg = "${c.subtle}", bg = "${c.overlay}" } },
+                  insert   = { a = { fg = "${c.base}",  bg = "${c.red}",    gui = "bold" }, b = { fg = "${c.text}",  bg = "${c.surface}" }, c = { fg = "${c.subtle}", bg = "${c.overlay}" } },
+                  visual   = { a = { fg = "${c.base}",  bg = "${c.subtle}", gui = "bold" }, b = { fg = "${c.text}",  bg = "${c.surface}" }, c = { fg = "${c.subtle}", bg = "${c.overlay}" } },
+                  replace  = { a = { fg = "${c.base}",  bg = "${c.red}",    gui = "bold" }, b = { fg = "${c.text}",  bg = "${c.surface}" }, c = { fg = "${c.subtle}", bg = "${c.overlay}" } },
+                  command  = { a = { fg = "${c.base}",  bg = "${c.orange}", gui = "bold" }, b = { fg = "${c.text}",  bg = "${c.surface}" }, c = { fg = "${c.subtle}", bg = "${c.overlay}" } },
+                  inactive = { a = { fg = "${c.muted}", bg = "${c.overlay}"              }, b = { fg = "${c.muted}", bg = "${c.overlay}"  }, c = { fg = "${c.muted}",  bg = "${c.overlay}"  } },
+                }
+              '';
+              globalstatus = true;
+              component_separators = {
+                left = "";
+                right = "";
+              };
+              section_separators = {
+                left = "";
+                right = "";
+              };
+            };
+            sections = {
+              lualine_a = [ "mode" ];
+              lualine_b = [ "branch" "diff" "diagnostics" ];
+              lualine_c = [ "filename" ];
+              lualine_x = [ "filetype" ];
+              lualine_y = [ "progress" ];
+              lualine_z = [ "location" ];
+            };
+            inactive_sections = {
+              lualine_c = [ "filename" ];
+              lualine_x = [ "location" ];
+            };
+          };
+        };
+
+        filetree.neo-tree = {
+          enable = true;
+          setupOpts = {
+            close_if_last_window = true;
+            window = {
+              position = "left";
+              width = 30;
+            };
+            filesystem = {
+              filtered_items = {
+                hide_dotfiles = false;
+                hide_gitignored = false;
+              };
+            };
+          };
+        };
+
         autocomplete = {
           blink-cmp.enable = false;
 
@@ -146,6 +209,13 @@ in
               end
             '';
           }
+          {
+            key = "<leader>t";
+            mode = "n";
+            desc = "Toggle file tree";
+            action = ":Neotree toggle<CR>";
+            silent = true;
+          }
         ];
 
         lsp = {
@@ -170,6 +240,7 @@ in
           servers = {
             rust_analyzer = {
               cmd = [ "${pkgs.rust-analyzer}/bin/rust-analyzer" ];
+              filetypes = [ "rust" ];
               root_dir = lib.mkForce (mkLuaInline ''
                 function(bufnr, on_dir)
                   if vim.fn.executable("cargo") ~= 1 then
@@ -192,6 +263,7 @@ in
             };
 
             gopls = {
+              filetypes = [ "go" "gomod" "gowork" "gotmpl" ];
               root_dir = lib.mkForce (mkLuaInline ''
                 function(bufnr, on_dir)
                   if vim.fn.executable("go") ~= 1 then
@@ -356,6 +428,8 @@ in
           };
         };
 
+        treesitter.autotagHtml = true;
+
         languages = {
           enableTreesitter = true;
           enableFormat = false;
@@ -433,6 +507,17 @@ in
 
             start_named_server("csharp_ls")
           end, { desc = "Start C# LSP (csharp_ls)" })
+        '';
+
+        luaConfigRC.whichKeyGroups = ''
+          local ok, wk = pcall(require, "which-key")
+          if ok then
+            wk.add({
+              { "<leader>r",  group = "rename" },
+              { "<leader>c",  group = "code" },
+              { "<leader>D",  group = "type" },
+            })
+          end
         '';
 
         luaConfigRC.customTheme = ''
@@ -596,6 +681,46 @@ in
           hi("TelescopeResultsTitle",  { fg = "${c.base}", bg = "${c.red}", bold = true })
           hi("TelescopeSelection",     { bg = "${c.highlightMed}" })
           hi("TelescopeMatching",      { fg = "${c.orange}", bold = true })
+
+          -- Neo-tree
+          hi("NeoTreeNormal",              { fg = "${c.text}",     bg = "${c.overlay}" })
+          hi("NeoTreeNormalNC",            { fg = "${c.text}",     bg = "${c.overlay}" })
+          hi("NeoTreeWinSeparator",        { fg = "${c.muted}",    bg = "${c.overlay}" })
+          hi("NeoTreeEndOfBuffer",         { fg = "${c.overlay}",  bg = "${c.overlay}" })
+          hi("NeoTreeRootName",            { fg = "${c.orange}",   bold = true })
+          hi("NeoTreeFileName",            { fg = "${c.text}" })
+          hi("NeoTreeFileNameOpened",      { fg = "${c.orange}" })
+          hi("NeoTreeIndentMarker",        { fg = "${c.muted}" })
+          hi("NeoTreeExpander",            { fg = "${c.subtle}" })
+          hi("NeoTreeCursorLine",          { bg = "${c.highlightMed}" })
+          hi("NeoTreeFloatBorder",         { fg = "${c.muted}",    bg = "${c.overlay}" })
+          hi("NeoTreeFloatTitle",          { fg = "${c.orange}",   bg = "${c.overlay}", bold = true })
+          hi("NeoTreeTitleBar",            { fg = "${c.base}",     bg = "${c.orange}", bold = true })
+          hi("NeoTreeDotfile",             { fg = "${c.muted}" })
+          hi("NeoTreeHiddenByName",        { fg = "${c.muted}" })
+          hi("NeoTreeSymbolicLinkTarget",  { fg = "${c.subtle}" })
+          hi("NeoTreeGitAdded",            { fg = "${c.greenDim}" })
+          hi("NeoTreeGitModified",         { fg = "${c.orange}" })
+          hi("NeoTreeGitDeleted",          { fg = "${c.red}" })
+          hi("NeoTreeGitUntracked",        { fg = "${c.subtle}" })
+          hi("NeoTreeGitIgnored",          { fg = "${c.muted}" })
+          hi("NeoTreeGitConflict",         { fg = "${c.red}",      bold = true })
+          hi("NeoTreeGitStaged",           { fg = "${c.greenDim}" })
+          hi("NeoTreeGitUnstaged",         { fg = "${c.orange}" })
+          hi("NeoTreeDiagnosticError",     { fg = "${c.red}" })
+          hi("NeoTreeDiagnosticWarn",      { fg = "${c.orange}" })
+          hi("NeoTreeDiagnosticInfo",      { fg = "${c.subtle}" })
+          hi("NeoTreeDiagnosticHint",      { fg = "${c.muted}" })
+
+          -- Which-key
+          hi("WhichKey",          { fg = "${c.orange}" })
+          hi("WhichKeyDesc",      { fg = "${c.text}" })
+          hi("WhichKeyGroup",     { fg = "${c.red}",    bold = true })
+          hi("WhichKeyNormal",    { fg = "${c.text}",   bg = "${c.overlay}" })
+          hi("WhichKeyBorder",    { fg = "${c.muted}",  bg = "${c.overlay}" })
+          hi("WhichKeyTitle",     { fg = "${c.base}",   bg = "${c.orange}", bold = true })
+          hi("WhichKeySeparator", { fg = "${c.muted}" })
+          hi("WhichKeyValue",     { fg = "${c.subtle}" })
         '';
       };
     };

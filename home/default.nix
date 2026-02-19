@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./modules/direnv
     ./modules/git
     ./modules/niri
     ./modules/opencode
@@ -22,7 +23,15 @@
     brightnessctl
     ripgrep
     fd
+    gh
+    jq
+    vlc
     vivaldi
+    jetbrains.idea
+    jetbrains.pycharm
+    jetbrains.webstorm
+    jetbrains.rider
+    android-studio
     yazi
     kdePackages.dolphin
     grim

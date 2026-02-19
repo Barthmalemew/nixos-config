@@ -10,6 +10,7 @@
   # Networking
   networking.networkmanager.enable = true;
   hardware.bluetooth.enable = true;
+  services.fwupd.enable = true;
 
   # Localization — override time.timeZone per-host if needed
   time.timeZone = lib.mkDefault "America/New_York";
@@ -42,8 +43,16 @@
   # XDG portal
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
-    config.common.default = "kde";
+    extraPortals = [
+      pkgs.kdePackages.xdg-desktop-portal-kde
+      pkgs.xdg-desktop-portal-gnome
+    ];
+    config.common = {
+      default = "kde";
+      "org.freedesktop.portal.ScreenCast" = "gnome";
+      "org.freedesktop.portal.Screenshot" = "gnome";
+      "org.freedesktop.portal.RemoteDesktop" = "gnome";
+    };
   };
 
   # Audio

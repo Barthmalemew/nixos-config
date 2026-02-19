@@ -24,6 +24,8 @@
 
     layout {
         gaps 6
+        always-center-single-column
+        default-column-width { proportion 0.5; }
         border {
             width 2
             active-color "${colorscheme.green}"
@@ -49,7 +51,7 @@
         Mod+Shift+E { quit; }
         Mod+Shift+Q { close-window; }
 
-        Mod+Return { spawn "foot"; }
+        Mod+Return { spawn "wezterm"; }
         Mod+D { spawn "qs" "ipc" "call" "launcher" "toggle"; }
         Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
 
@@ -156,6 +158,11 @@
 
     window-rule {
       open-fullscreen false
+    }
+
+    window-rule {
+        match app-id=r#"vivaldi"#
+        open-maximized true
     }
   '' + lib.optionalString (hostname == "ladmin") ''
 

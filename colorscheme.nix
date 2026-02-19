@@ -1,6 +1,6 @@
 # Central color palette for the entire system.
 # EVA Unit-02: red, orange, black, gray, white, green (focus only).
-# Every module (foot, nvim, opencode, quickshell, niri, ...) imports
+# Every module (wezterm, nvim, opencode, quickshell, niri, ...) imports
 # this single file so colors only need to be changed in one place.
 {
   # Backgrounds — dark to darkest

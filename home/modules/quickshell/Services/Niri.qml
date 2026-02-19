@@ -50,8 +50,6 @@ Singleton {
 
     function iconForAppId(rawAppId) {
         const appIcons = {
-            "foot": "fa_terminal.svg",
-            "footclient": "fa_terminal.svg",
             "kitty": "fa_terminal.svg",
             "alacritty": "fa_terminal.svg",
             "ghostty": "fa_terminal.svg",
@@ -114,7 +112,7 @@ Singleton {
         };
 
         const keywordIcons = [
-            { icon: "fa_terminal.svg", keywords: ["foot", "kitty", "alacritty", "wezterm", "ghostty", "konsole", "terminal", "xterm", "urxvt", "tilix", "ptyxis"] },
+            { icon: "fa_terminal.svg", keywords: ["kitty", "alacritty", "wezterm", "ghostty", "konsole", "terminal", "xterm", "urxvt", "tilix", "ptyxis"] },
             { icon: "fa_globe.svg", keywords: ["firefox", "vivaldi", "chrome", "chromium", "brave", "browser", "opera", "edge", "librewolf", "qutebrowser", "epiphany", "falkon", "waterfox", "floorp", "zen"] },
             { icon: "fa_comment.svg", keywords: ["discord", "vesktop", "telegram", "signal", "slack", "element", "mattermost", "chat", "thunderbird", "mail"] },
             { icon: "fa_dev.svg", keywords: ["code", "codium", "jetbrains", "idea", "pycharm", "webstorm", "goland", "clion", "rider", "android-studio", "zed", "nvim", "neovide", "vim", "emacs", "sublime", "dev"] },

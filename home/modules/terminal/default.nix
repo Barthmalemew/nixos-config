@@ -2,48 +2,70 @@
 
 let
   c = colorscheme;
-  # foot wants hex without the leading '#'
-  strip = s: builtins.substring 1 (builtins.stringLength s - 1) s;
 in
 {
-  programs.foot = {
+  programs.wezterm = {
     enable = true;
+    enableZshIntegration = true;
 
-    settings = {
-      main = {
-        term = "xterm-256color";
-        font = "monospace:size=11";
-        pad = "8x8";
-      };
+    extraConfig = ''
+      local wezterm = require("wezterm")
 
-      colors = {
-        foreground = strip c.text;
-        background = strip c.base;
-        cursor = "${strip c.base} ${strip c.text}";
-
-        selection-foreground = strip c.text;
-        selection-background = strip c.highlightMed;
-
-        # Regular colors (0-7)
-        regular0 = strip c.base;         # black
-        regular1 = strip c.red;          # red
-        regular2 = strip c.green;        # green  (ANSI programs expect this)
-        regular3 = strip c.orange;       # yellow
-        regular4 = strip c.muted;        # blue   (no blue — use gray)
-        regular5 = strip c.red;          # magenta (use red)
-        regular6 = strip c.subtle;       # cyan   (no cyan — use light gray)
-        regular7 = strip c.subtle;       # white
-
-        # Bright colors (8-15)
-        bright0 = strip c.muted;         # bright black
-        bright1 = strip c.orange;        # bright red
-        bright2 = strip c.greenDim;      # bright green
-        bright3 = strip c.orange;        # bright yellow
-        bright4 = strip c.subtle;        # bright blue  (gray)
-        bright5 = strip c.orange;        # bright magenta (orange)
-        bright6 = strip c.subtle;        # bright cyan  (gray)
-        bright7 = strip c.text;          # bright white
-      };
-    };
+      return {
+        term = "xterm-256color",
+        font_size = 11.0,
+        enable_tab_bar = false,
+        keys = {
+          { key = "v", mods = "ALT", action = wezterm.action.SplitPane { direction = "Right", size = { Percent = 50 } } },
+          { key = "s", mods = "ALT", action = wezterm.action.SplitPane { direction = "Down", size = { Percent = 50 } } },
+          { key = "h", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Left") },
+          { key = "j", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Down") },
+          { key = "k", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Up") },
+          { key = "l", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Right") },
+          { key = "H", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Left", 3 }) },
+          { key = "J", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Down", 3 }) },
+          { key = "K", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Up", 3 }) },
+          { key = "L", mods = "ALT|SHIFT", action = wezterm.action.AdjustPaneSize({ "Right", 3 }) },
+          { key = "q", mods = "ALT", action = wezterm.action.CloseCurrentPane { confirm = true } },
+          { key = "f", mods = "ALT", action = wezterm.action.TogglePaneZoomState },
+          { key = "t", mods = "CTRL|SHIFT", action = wezterm.action.DisableDefaultAssignment },
+          { key = "t", mods = "SUPER", action = wezterm.action.DisableDefaultAssignment },
+        },
+        window_padding = {
+          left = 8,
+          right = 8,
+          top = 8,
+          bottom = 8,
+        },
+        colors = {
+          foreground = "${c.text}",
+          background = "${c.base}",
+          cursor_bg = "${c.text}",
+          cursor_fg = "${c.base}",
+          selection_fg = "${c.text}",
+          selection_bg = "${c.highlightMed}",
+          ansi = {
+            "${c.base}",
+            "${c.red}",
+            "${c.green}",
+            "${c.orange}",
+            "${c.muted}",
+            "${c.red}",
+            "${c.subtle}",
+            "${c.subtle}",
+          },
+          brights = {
+            "${c.muted}",
+            "${c.orange}",
+            "${c.greenDim}",
+            "${c.orange}",
+            "${c.subtle}",
+            "${c.orange}",
+            "${c.subtle}",
+            "${c.text}",
+          },
+        },
+      }
+    '';
   };
 }

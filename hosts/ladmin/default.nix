@@ -11,8 +11,11 @@
   users.users.${username} = {
     isNormalUser = true;
     description = username;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
   };
+
+  # Minimal Docker runtime support (CLI stays in project dev shells)
+  virtualisation.docker.enable = true;
 
   # OpenRGB
   services.hardware.openrgb = {
