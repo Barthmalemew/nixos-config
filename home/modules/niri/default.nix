@@ -14,10 +14,12 @@
         mouse {
             accel-profile "flat"
         }
+        ${lib.optionalString (hostname == "ladmin-laptop") ''
         touchpad {
             tap
             natural-scroll
         }
+        ''}
     }
 
     layout {
@@ -60,8 +62,10 @@
         XF86AudioNext { spawn "playerctl" "next"; }
         XF86AudioPrev { spawn "playerctl" "previous"; }
         XF86AudioStop { spawn "playerctl" "stop"; }
+        ${lib.optionalString (hostname == "ladmin-laptop") ''
         XF86MonBrightnessUp { spawn "brightnessctl" "set" "+5%"; }
         XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+        ''}
 
         Mod+Left  { focus-column-left; }
         Mod+Down  { focus-window-down; }

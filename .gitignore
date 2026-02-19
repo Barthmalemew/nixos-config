@@ -12,9 +12,6 @@ id_ed25519
 # Mandrid Memory Database (Local state)
 .mem_db/
 
-# Hardware Config (Machine Specific)
-hardware-configuration.nix
-
 # Editors / OS
 .DS_Store
 .idea/

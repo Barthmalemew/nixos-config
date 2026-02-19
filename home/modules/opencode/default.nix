@@ -93,7 +93,6 @@ in
 {
   home.packages = [ pkgs.opencode ];
 
-  xdg.configFile."opencode/opencode.json".text = builtins.toJSON opencodeConfig;
   xdg.configFile."opencode/config.json".text = builtins.toJSON opencodeConfig;
   xdg.configFile."opencode/themes/system.json".text = opencodeTheme;
 }

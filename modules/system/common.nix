@@ -1,4 +1,4 @@
-{ config, pkgs, username, ... }:
+{ lib, pkgs, username, ... }:
 
 {
   # Boot
@@ -10,10 +10,9 @@
   # Networking
   networking.networkmanager.enable = true;
   hardware.bluetooth.enable = true;
-  services.upower.enable = true;
 
-  # Localization - CHANGE YOUR TIMEZONE
-  time.timeZone = "America/New_York";
+  # Localization — override time.timeZone per-host if needed
+  time.timeZone = lib.mkDefault "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Nix settings

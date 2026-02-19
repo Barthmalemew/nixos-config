@@ -1,4 +1,4 @@
-{ config, pkgs, username, ... }:
+{ pkgs, username, ... }:
 
 {
   imports = [
@@ -39,7 +39,7 @@
   };
 
   home.sessionVariables = {
-    EDITOR = "vim";
+    EDITOR = "nvim";
     XCURSOR_SIZE = "16";
     XCURSOR_THEME = "Adwaita";
   };

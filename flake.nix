@@ -3,13 +3,16 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    niri.url = "github:sodiboo/niri-flake";
+    niri = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nvf = {
       url = "github:notashelf/nvf";
@@ -17,29 +20,29 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, niri, nvf, ... }@inputs: 
+  outputs = { nixpkgs, home-manager, niri, nvf, ... }@inputs:
     let
-      system = "x86_64-linux";            
-      username = "barthmalemew";          
-      
+      system = "x86_64-linux";
+      username = "barthmalemew";
+
       colorscheme = import ./colorscheme.nix;
 
       mkHost = host: nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs username; };
+        specialArgs = { inherit username; };
         modules = [
           ./hosts/${host}/default.nix
           niri.nixosModules.niri
           home-manager.nixosModules.home-manager
           {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { inherit username colorscheme; hostname = host; };
-          home-manager.users.${username} = import ./home/default.nix;
-          home-manager.sharedModules = [ inputs.nvf.homeManagerModules.default ];
-        }
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit username colorscheme; hostname = host; };
+            home-manager.users.${username} = import ./home/default.nix;
+            home-manager.sharedModules = [ inputs.nvf.homeManagerModules.default ];
+          }
         ];
-      };    
+      };
     in
     {
       nixosConfigurations = {

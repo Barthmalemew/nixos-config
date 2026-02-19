@@ -5,13 +5,14 @@ import qs.Components
 import qs.Services
 
 Item {
+    required property int id
     required property int idx
     required property bool isActive
     required property string output
     readonly property string iconSource: {
-        const idxKey = String(idx);
-        if (Niri.workspaceIconsByIdx && Niri.workspaceIconsByIdx[idxKey]) {
-            return Niri.workspaceIconsByIdx[idxKey];
+        const idKey = String(id);
+        if (Niri.workspaceIconsByIdx && Niri.workspaceIconsByIdx[idKey]) {
+            return Niri.workspaceIconsByIdx[idKey];
         }
         return "fa_plus.svg";
     }

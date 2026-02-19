@@ -32,7 +32,7 @@ let
         readonly property color love: "${c.red}"
         readonly property color highlightLow: "${c.highlightLow}"
         readonly property color highlightMed: "${c.highlightMed}"
-        readonly property color highlightHigh: "${c.orange}"
+        readonly property color highlightHigh: "${c.highlightHigh}"
         readonly property color border: "${c.muted}"
 
         readonly property color accentPrimary: iris

@@ -1,24 +1,15 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  # Power management
-  powerManagement.enable = true;
+  # Power management — power-profiles-daemon is recommended for Intel Lunar Lake (Core Ultra 200V).
+  # It works with the kernel's built-in EAS; TLP/thermald conflict with its efficiency-core scheduling.
+  services.power-profiles-daemon.enable = true;
 
+  # Deep sleep (S3) instead of s2idle for better suspend battery life
   boot.kernelParams = [ "mem_sleep_default=deep" ];
 
-  services.tlp = {
-    enable = true;
-    settings = {
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-      PLATFORM_PROFILE_ON_AC = "performance";
-      PLATFORM_PROFILE_ON_BAT = "low-power";
-    };
-  };
-
-  services.thermald.enable = true;
+  # Battery and power status (used by quickshell battery widget)
+  services.upower.enable = true;
 
   environment.systemPackages = with pkgs; [
     powertop

@@ -8,6 +8,7 @@ Singleton {
     property ListModel workspaces: ListModel {}
     property var windowsById: ({})
     property var windowsByWorkspaceId: ({})
+    property var workspaceIdByWindowId: ({})
     property var workspaceAppIdsByIdx: ({})
     property var workspaceIconsByIdx: ({})
 
@@ -138,14 +139,30 @@ Singleton {
         return "fa_plus.svg";
     }
 
+    function appIdForWorkspaceDirect(workspaceId) {
+        // Scan all known windows for one that belongs to this workspace.
+        // This is the most reliable path since it doesn't depend on activeWindowId
+        // being set correctly in the workspace snapshot.
+        const wsIdKey = String(workspaceId);
+        for (const windowId of Object.keys(windowsById)) {
+            const win = windowsById[windowId];
+            if (win.workspaceId === wsIdKey) {
+                return win.appId;
+            }
+        }
+        return "";
+    }
+
     function refreshWorkspaceAppIds() {
         const nextWorkspaceAppIdsByIdx = {};
         const nextWorkspaceIconsByIdx = {};
         for (let i = 0; i < workspaces.count; i++) {
             const value = workspaces.get(i);
             const activeWindowId = normalizeWindowId(value.activeWindowId);
-            const appId = appIdForWindow(activeWindowId) || appIdForWorkspace(value.id);
-            const idxKey = String(value.idx);
+            const appId = appIdForWindow(activeWindowId)
+                       || appIdForWorkspace(value.id)
+                       || appIdForWorkspaceDirect(value.id);
+            const idKey = String(value.id);
             const icon = iconForAppId(appId);
             workspaces.set(i, {
                 id: value.id,
@@ -156,8 +173,8 @@ Singleton {
                 activeWindowId: activeWindowId,
                 appId: appId
             });
-            nextWorkspaceAppIdsByIdx[idxKey] = appId;
-            nextWorkspaceIconsByIdx[idxKey] = icon;
+            nextWorkspaceAppIdsByIdx[idKey] = appId;
+            nextWorkspaceIconsByIdx[idKey] = icon;
         }
         workspaceAppIdsByIdx = nextWorkspaceAppIdsByIdx;
         workspaceIconsByIdx = nextWorkspaceIconsByIdx;
@@ -166,6 +183,7 @@ Singleton {
     function updateWindows(windowsEvent) {
         const nextWindowsById = {};
         const nextWindowsByWorkspaceId = {};
+        const nextWorkspaceIdByWindowId = {};
         for (const window of windowsEvent.windows) {
             const windowId = window ? normalizeWindowId(window.id) : "";
             if (!windowId) {
@@ -175,19 +193,32 @@ Singleton {
             const appId = typeof window.app_id === "string" ? window.app_id : "";
             const workspaceId = window && window.workspace_id !== undefined && window.workspace_id !== null ? String(window.workspace_id) : "";
 
-            nextWindowsById[windowId] = {
-                appId: appId
-            };
+            nextWindowsById[windowId] = { appId: appId, workspaceId: workspaceId };
 
             if (workspaceId) {
+                nextWorkspaceIdByWindowId[windowId] = workspaceId;
                 if (!nextWindowsByWorkspaceId[workspaceId] || window.is_focused) {
                     nextWindowsByWorkspaceId[workspaceId] = appId;
                 }
             }
         }
 
+        // For any workspace whose active window has no workspace_id in the payload
+        // (common for the focused workspace on some niri versions), fill it in via activeWindowId.
+        for (let i = 0; i < workspaces.count; i++) {
+            const ws = workspaces.get(i);
+            const wsActiveWindowId = normalizeWindowId(ws.activeWindowId);
+            if (wsActiveWindowId && nextWindowsById[wsActiveWindowId]) {
+                const wsIdKey = String(ws.id);
+                if (!nextWindowsByWorkspaceId[wsIdKey]) {
+                    nextWindowsByWorkspaceId[wsIdKey] = nextWindowsById[wsActiveWindowId].appId;
+                }
+            }
+        }
+
         windowsById = nextWindowsById;
         windowsByWorkspaceId = nextWindowsByWorkspaceId;
+        workspaceIdByWindowId = nextWorkspaceIdByWindowId;
         refreshWorkspaceAppIds();
     }
 
@@ -211,6 +242,10 @@ Singleton {
             });
         }
         refreshWorkspaceAppIds();
+        // Ensure window data is fresh so icons resolve correctly (especially workspace 1 on startup).
+        if (!niriWindowsSnapshot.running) {
+            niriWindowsSnapshot.running = true;
+        }
     }
 
     function activateWorkspace(workspacesEvent) {
@@ -313,6 +348,13 @@ Singleton {
                     }
                     if (event.WorkspaceActivated) {
                         activateWorkspace(event.WorkspaceActivated);
+                    }
+                    if (event.WindowFocusChanged) {
+                        // A window gaining focus may change the icon for its workspace.
+                        // Re-sync window data to pick up the new focus state.
+                        if (!niriWindowsSnapshot.running) {
+                            niriWindowsSnapshot.running = true;
+                        }
                     }
                 } catch (e) {
                     console.log(e);
