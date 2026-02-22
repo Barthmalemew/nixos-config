@@ -79,9 +79,9 @@
     wl-clipboard
   ];
 
-  # ZSH — must be enabled at system level for it to appear in /etc/shells
-  programs.zsh.enable = true;
-  users.users.${username}.shell = pkgs.zsh;
+  # Bash — bashInteractive is already in /etc/shells by default on NixOS.
+  # home-manager's programs.bash manages ~/.bashrc / ~/.bash_profile.
+  users.users.${username}.shell = pkgs.bashInteractive;
 
   # SSH
   services.openssh.enable = true;

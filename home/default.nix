@@ -10,7 +10,7 @@
     ./modules/nvf
     ./modules/quickshell
     ./modules/terminal
-    ./modules/zsh
+    ./modules/bash
   ];
 
   home.username = username;

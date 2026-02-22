@@ -6,7 +6,7 @@ in
 {
   programs.wezterm = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = false;
 
     extraConfig = ''
       local wezterm = require("wezterm")
@@ -16,6 +16,11 @@ in
         font_size = 11.0,
         enable_tab_bar = false,
         keys = {
+          { key = "c", mods = "CTRL|SHIFT", action = wezterm.action.CopyTo "Clipboard" },
+          { key = "v", mods = "CTRL|SHIFT", action = wezterm.action_callback(function(window, pane)
+              local ok, stdout, _ = wezterm.run_child_process({ "wl-paste", "--no-newline" })
+              if ok then pane:send_text(stdout) end
+            end) },
           { key = "v", mods = "ALT", action = wezterm.action.SplitPane { direction = "Right", size = { Percent = 50 } } },
           { key = "s", mods = "ALT", action = wezterm.action.SplitPane { direction = "Down", size = { Percent = 50 } } },
           { key = "h", mods = "ALT", action = wezterm.action.ActivatePaneDirection("Left") },
